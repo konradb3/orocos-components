@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+  <struct name="Chain" type="KDL::Chain">
+     <description>Kinematic Description of the robot chain</description>
+     <struct name="Segment" type="KDL::Segment">
+        <description>Segment of the chain</description>
+        <struct name="joint" type="KDL::Joint">
+           <description>The joint at the base of this segment</description>
+           <simple name="Type" type="string"><description>Type of Joint</description><value>TransX</value></simple>
+        </struct>
+        <struct name="frame" type="KDL::Frame">
+           <description>The offset frame from the joint at the base to the end of the link</description>
+           <struct name="Position" type="KDL::Vector">
+              <simple name="X" type="double"><description>X Value</description><value>0</value></simple>
+              <simple name="Y" type="double"><description>Y Value</description><value>0</value></simple>
+              <simple name="Z" type="double"><description>Z Value</description><value>0</value></simple>
+           </struct>
+           <struct name="Rotation" type="KDL::Rotation">
+              <simple name="X_x" type="double"><value>1</value></simple>
+              <simple name="X_y" type="double"><value>0</value></simple>
+              <simple name="X_z" type="double"><value>0</value></simple>
+              <simple name="Y_x" type="double"><value>0</value></simple>
+              <simple name="Y_y" type="double"><value>1</value></simple>
+              <simple name="Y_z" type="double"><value>0</value></simple>
+              <simple name="Z_x" type="double"><value>0</value></simple>
+              <simple name="Z_y" type="double"><value>0</value></simple>
+              <simple name="Z_z" type="double"><value>1</value></simple>
+           </struct>
+        </struct>
+     </struct>
+     <struct name="Segment" type="KDL::Segment">
+        <description>Segment of the chain</description>
+        <struct name="joint" type="KDL::Joint">
+           <description>The joint at the base of this segment</description>
+           <simple name="Type" type="string"><description>Type of Joint</description><value>RotZ</value></simple>
+        </struct>
+        <struct name="frame" type="KDL::Frame">
+           <description>The offset frame from the joint at the base to the end of the link</description>
+           <struct name="Position" type="KDL::Vector">
+              <simple name="X" type="double"><description>X Value</description><value>0</value></simple>
+              <simple name="Y" type="double"><description>Y Value</description><value>0</value></simple>
+              <simple name="Z" type="double"><description>Z Value</description><value>0.52</value></simple>
+           </struct>
+           <struct name="Rotation" type="KDL::Rotation">
+              <simple name="X_x" type="double"><value>1</value></simple>
+              <simple name="X_y" type="double"><value>0</value></simple>
+              <simple name="X_z" type="double"><value>0</value></simple>
+              <simple name="Y_x" type="double"><value>0</value></simple>
+              <simple name="Y_y" type="double"><value>1</value></simple>
+              <simple name="Y_z" type="double"><value>0</value></simple>
+              <simple name="Z_x" type="double"><value>0</value></simple>
+              <simple name="Z_y" type="double"><value>0</value></simple>
+              <simple name="Z_z" type="double"><value>1</value></simple>
+           </struct>
+        </struct>
+     </struct>
+     <struct name="Segment" type="KDL::Segment">
+        <description>Segment of the chain</description>
+        <struct name="joint" type="KDL::Joint">
+           <description>The joint at the base of this segment</description>
+           <simple name="Type" type="string"><description>Type of Joint</description><value>RotX</value></simple>
+        </struct>
+        <struct name="frame" type="KDL::Frame">
+           <description>The offset frame from the joint at the base to the end of the link</description>
+           <struct name="Position" type="KDL::Vector">
+              <simple name="X" type="double"><description>X Value</description><value>0</value></simple>
+              <simple name="Y" type="double"><description>Y Value</description><value>0.455</value></simple>
+              <simple name="Z" type="double"><description>Z Value</description><value>0</value></simple>
+           </struct>
+           <struct name="Rotation" type="KDL::Rotation">
+              <simple name="X_x" type="double"><value>1</value></simple>
+              <simple name="X_y" type="double"><value>0</value></simple>
+              <simple name="X_z" type="double"><value>0</value></simple>
+              <simple name="Y_x" type="double"><value>0</value></simple>
+              <simple name="Y_y" type="double"><value>1</value></simple>
+              <simple name="Y_z" type="double"><value>0</value></simple>
+              <simple name="Z_x" type="double"><value>0</value></simple>
+              <simple name="Z_y" type="double"><value>0</value></simple>
+              <simple name="Z_z" type="double"><value>1</value></simple>
+           </struct>
+        </struct>
+     </struct>
+     <struct name="Segment" type="KDL::Segment">
+        <description>Segment of the chain</description>
+        <struct name="joint" type="KDL::Joint">
+           <description>The joint at the base of this segment</description>
+           <simple name="Type" type="string"><description>Type of Joint</description><value>RotX</value></simple>
+        </struct>
+        <struct name="frame" type="KDL::Frame">
+           <description>The offset frame from the joint at the base to the end of the link</description>
+           <struct name="Position" type="KDL::Vector">
+              <simple name="X" type="double"><description>X Value</description><value>0</value></simple>
+              <simple name="Y" type="double"><description>Y Value</description><value>0</value></simple>
+              <simple name="Z" type="double"><description>Z Value</description><value>-0.67</value></simple>
+           </struct>
+           <struct name="Rotation" type="KDL::Rotation">
+              <simple name="X_x" type="double"><value>1</value></simple>
+              <simple name="X_y" type="double"><value>0</value></simple>
+              <simple name="X_z" type="double"><value>0</value></simple>
+              <simple name="Y_x" type="double"><value>0</value></simple>
+              <simple name="Y_y" type="double"><value>1</value></simple>
+              <simple name="Y_z" type="double"><value>0</value></simple>
+              <simple name="Z_x" type="double"><value>0</value></simple>
+              <simple name="Z_y" type="double"><value>0</value></simple>
+              <simple name="Z_z" type="double"><value>1</value></simple>
+           </struct>
+        </struct>
+     </struct>
+     <struct name="Segment" type="KDL::Segment">
+        <description>Segment of the chain</description>
+        <struct name="joint" type="KDL::Joint">
+           <description>The joint at the base of this segment</description>
+           <simple name="Type" type="string"><description>Type of Joint</description><value>RotX</value></simple>
+        </struct>
+        <struct name="frame" type="KDL::Frame">
+           <description>The offset frame from the joint at the base to the end of the link</description>
+           <struct name="Position" type="KDL::Vector">
+              <simple name="X" type="double"><description>X Value</description><value>0</value></simple>
+              <simple name="Y" type="double"><description>Y Value</description><value>0</value></simple>
+              <simple name="Z" type="double"><description>Z Value</description><value>0</value></simple>
+           </struct>
+           <struct name="Rotation" type="KDL::Rotation">
+              <simple name="X_x" type="double"><value>1</value></simple>
+              <simple name="X_y" type="double"><value>0</value></simple>
+              <simple name="X_z" type="double"><value>0</value></simple>
+              <simple name="Y_x" type="double"><value>0</value></simple>
+              <simple name="Y_y" type="double"><value>1</value></simple>
+              <simple name="Y_z" type="double"><value>0</value></simple>
+              <simple name="Z_x" type="double"><value>0</value></simple>
+              <simple name="Z_y" type="double"><value>0</value></simple>
+              <simple name="Z_z" type="double"><value>1</value></simple>
+           </struct>
+        </struct>
+     </struct>
+     <struct name="Segment" type="KDL::Segment">
+        <description>Segment of the chain</description>
+        <struct name="joint" type="KDL::Joint">
+           <description>The joint at the base of this segment</description>
+           <simple name="Type" type="string"><description>Type of Joint</description><value>RotZ</value></simple>
+        </struct>
+        <struct name="frame" type="KDL::Frame">
+           <description>The offset frame from the joint at the base to the end of the link</description>
+           <struct name="Position" type="KDL::Vector">
+              <simple name="X" type="double"><description>X Value</description><value>0</value></simple>
+              <simple name="Y" type="double"><description>Y Value</description><value>0</value></simple>
+              <simple name="Z" type="double"><description>Z Value</description><value>-0.19</value></simple>
+           </struct>
+           <struct name="Rotation" type="KDL::Rotation">
+              <simple name="X_x" type="double"><value>1</value></simple>
+              <simple name="X_y" type="double"><value>0</value></simple>
+              <simple name="X_z" type="double"><value>0</value></simple>
+              <simple name="Y_x" type="double"><value>0</value></simple>
+              <simple name="Y_y" type="double"><value>1</value></simple>
+              <simple name="Y_z" type="double"><value>0</value></simple>
+              <simple name="Z_x" type="double"><value>0</value></simple>
+              <simple name="Z_y" type="double"><value>0</value></simple>
+              <simple name="Z_z" type="double"><value>1</value></simple>
+           </struct>
+        </struct>
+     </struct>
+     <struct name="Segment" type="KDL::Segment">
+        <description>Segment of the chain</description>
+        <struct name="joint" type="KDL::Joint">
+           <description>The joint at the base of this segment</description>
+           <simple name="Type" type="string"><description>Type of Joint</description><value>RotX</value></simple>
+        </struct>
+        <struct name="frame" type="KDL::Frame">
+           <description>The offset frame from the joint at the base to the end of the link</description>
+           <struct name="Position" type="KDL::Vector">
+              <simple name="X" type="double"><description>X Value</description><value>0.1</value></simple>
+              <simple name="Y" type="double"><description>Y Value</description><value>0</value></simple>
+              <simple name="Z" type="double"><description>Z Value</description><value>0</value></simple>
+           </struct>
+           <struct name="Rotation" type="KDL::Rotation">
+              <simple name="X_x" type="double"><value>1</value></simple>
+              <simple name="X_y" type="double"><value>0</value></simple>
+              <simple name="X_z" type="double"><value>0</value></simple>
+              <simple name="Y_x" type="double"><value>0</value></simple>
+              <simple name="Y_y" type="double"><value>1</value></simple>
+              <simple name="Y_z" type="double"><value>0</value></simple>
+              <simple name="Z_x" type="double"><value>0</value></simple>
+              <simple name="Z_y" type="double"><value>0</value></simple>
+              <simple name="Z_z" type="double"><value>1</value></simple>
+           </struct>
+        </struct>
+     </struct>
+  </struct>
+  <struct name="qmin" type="array">
+     <description>Position lower limit for joints</description>
+     <simple type="double"><value>0</value></simple>
+     <simple type="double"><value>-2.96706</value></simple>
+     <simple type="double"><value>0.87266</value></simple>
+     <simple type="double"><value>-0.43633</value></simple>
+     <simple type="double"><value>-1.57</value></simple>
+     <simple type="double"><value>-6.28</value></simple>
+     <simple type="double"><value>-6.14</value></simple>
+  </struct>
+  <struct name="qmax" type="array">
+     <description>Position upper limit for joints</description>
+     <simple type="double"><value>0.80</value></simple>
+     <simple type="double"><value>2.96706</value></simple>
+     <simple type="double"><value>2.2689</value></simple>
+     <simple type="double"><value>0.698131</value></simple>
+     <simple type="double"><value>1.57</value></simple>
+     <simple type="double"><value>6.28</value></simple>
+     <simple type="double"><value>6.14</value></simple>
+  </struct>
+</properties>

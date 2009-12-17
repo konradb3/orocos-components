@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+  <struct name="Chain" type="KDL::Chain">
+     <description>Kinematic Description of the robot chain</description>
+     <struct name="Segment" type="KDL::Segment">
+        <description>Segment of the chain</description>
+        <struct name="joint" type="KDL::Joint">
+           <description>The joint at the base of this segment</description>
+           <simple name="Type" type="string"><description>Type of Joint</description><value>RotZ</value></simple>
+        </struct>
+        <struct name="frame" type="KDL::Frame">
+           <description>The offset frame from the joint at the base to the end of the link</description>
+           <struct name="Position" type="KDL::Vector">
+              <simple name="X" type="double"><description>X Value</description><value>0</value></simple>
+              <simple name="Y" type="double"><description>Y Value</description><value>0</value></simple>
+              <simple name="Z" type="double"><description>Z Value</description><value>0.52</value></simple>
+           </struct>
+           <struct name="Rotation" type="KDL::RPY">
+              <simple name="R" type="double"><description>First rotate around X with R(oll) in radians</description><value>0</value></simple>
+              <simple name="P" type="double"><description>Next rotate around old Y with P(itch) in radians</description><value>-0</value></simple>
+              <simple name="Y" type="double"><description>Next rotate around old Z with Y(aw) in radians</description><value>0</value></simple>
+           </struct>
+        </struct>
+     </struct>
+     <struct name="Segment" type="KDL::Segment">
+        <description>Segment of the chain</description>
+        <struct name="joint" type="KDL::Joint">
+           <description>The joint at the base of this segment</description>
+           <simple name="Type" type="string"><description>Type of Joint</description><value>RotX</value></simple>
+        </struct>
+        <struct name="frame" type="KDL::Frame">
+           <description>The offset frame from the joint at the base to the end of the link</description>
+           <struct name="Position" type="KDL::Vector">
+              <simple name="X" type="double"><description>X Value</description><value>0</value></simple>
+              <simple name="Y" type="double"><description>Y Value</description><value>0.455</value></simple>
+              <simple name="Z" type="double"><description>Z Value</description><value>0</value></simple>
+           </struct>
+           <struct name="Rotation" type="KDL::RPY">
+              <simple name="R" type="double"><description>First rotate around X with R(oll) in radians</description><value>0</value></simple>
+              <simple name="P" type="double"><description>Next rotate around old Y with P(itch) in radians</description><value>-0</value></simple>
+              <simple name="Y" type="double"><description>Next rotate around old Z with Y(aw) in radians</description><value>0</value></simple>
+           </struct>
+        </struct>
+     </struct>
+     <struct name="Segment" type="KDL::Segment">
+        <description>Segment of the chain</description>
+        <struct name="joint" type="KDL::Joint">
+           <description>The joint at the base of this segment</description>
+           <simple name="Type" type="string"><description>Type of Joint</description><value>RotX</value></simple>
+        </struct>
+        <struct name="frame" type="KDL::Frame">
+           <description>The offset frame from the joint at the base to the end of the link</description>
+           <struct name="Position" type="KDL::Vector">
+              <simple name="X" type="double"><description>X Value</description><value>0</value></simple>
+              <simple name="Y" type="double"><description>Y Value</description><value>0</value></simple>
+              <simple name="Z" type="double"><description>Z Value</description><value>-0.67</value></simple>
+           </struct>
+           <struct name="Rotation" type="KDL::RPY">
+              <simple name="R" type="double"><description>First rotate around X with R(oll) in radians</description><value>0</value></simple>
+              <simple name="P" type="double"><description>Next rotate around old Y with P(itch) in radians</description><value>-0</value></simple>
+              <simple name="Y" type="double"><description>Next rotate around old Z with Y(aw) in radians</description><value>0</value></simple>
+           </struct>
+        </struct>
+     </struct>
+     <struct name="Segment" type="KDL::Segment">
+        <description>Segment of the chain</description>
+        <struct name="joint" type="KDL::Joint">
+           <description>The joint at the base of this segment</description>
+           <simple name="Type" type="string"><description>Type of Joint</description><value>RotX</value></simple>
+        </struct>
+        <struct name="frame" type="KDL::Frame">
+           <description>The offset frame from the joint at the base to the end of the link</description>
+           <struct name="Position" type="KDL::Vector">
+              <simple name="X" type="double"><description>X Value</description><value>0</value></simple>
+              <simple name="Y" type="double"><description>Y Value</description><value>0</value></simple>
+              <simple name="Z" type="double"><description>Z Value</description><value>0</value></simple>
+           </struct>
+           <struct name="Rotation" type="KDL::RPY">
+              <simple name="R" type="double"><description>First rotate around X with R(oll) in radians</description><value>0</value></simple>
+              <simple name="P" type="double"><description>Next rotate around old Y with P(itch) in radians</description><value>-0</value></simple>
+              <simple name="Y" type="double"><description>Next rotate around old Z with Y(aw) in radians</description><value>0</value></simple>
+           </struct>
+        </struct>
+     </struct>
+     <struct name="Segment" type="KDL::Segment">
+        <description>Segment of the chain</description>
+        <struct name="joint" type="KDL::Joint">
+           <description>The joint at the base of this segment</description>
+           <simple name="Type" type="string"><description>Type of Joint</description><value>RotZ</value></simple>
+        </struct>
+        <struct name="frame" type="KDL::Frame">
+           <description>The offset frame from the joint at the base to the end of the link</description>
+           <struct name="Position" type="KDL::Vector">
+              <simple name="X" type="double"><description>X Value</description><value>0</value></simple>
+              <simple name="Y" type="double"><description>Y Value</description><value>0</value></simple>
+              <simple name="Z" type="double"><description>Z Value</description><value>-0.19</value></simple>
+           </struct>
+           <struct name="Rotation" type="KDL::RPY">
+              <simple name="R" type="double"><description>First rotate around X with R(oll) in radians</description><value>0</value></simple>
+              <simple name="P" type="double"><description>Next rotate around old Y with P(itch) in radians</description><value>-0</value></simple>
+              <simple name="Y" type="double"><description>Next rotate around old Z with Y(aw) in radians</description><value>0</value></simple>
+           </struct>
+        </struct>
+     </struct>
+     <struct name="Segment" type="KDL::Segment">
+        <description>Segment of the chain</description>
+        <struct name="joint" type="KDL::Joint">
+           <description>The joint at the base of this segment</description>
+           <simple name="Type" type="string"><description>Type of Joint</description><value>RotX</value></simple>
+        </struct>
+        <struct name="frame" type="KDL::Frame">
+           <description>The offset frame from the joint at the base to the end of the link</description>
+           <struct name="Position" type="KDL::Vector">
+              <simple name="X" type="double"><description>X Value</description><value>0.1</value></simple>
+              <simple name="Y" type="double"><description>Y Value</description><value>0</value></simple>
+              <simple name="Z" type="double"><description>Z Value</description><value>0</value></simple>
+           </struct>
+           <struct name="Rotation" type="KDL::RPY">
+              <simple name="R" type="double"><description>First rotate around X with R(oll) in radians</description><value>0</value></simple>
+              <simple name="P" type="double"><description>Next rotate around old Y with P(itch) in radians</description><value>-0</value></simple>
+              <simple name="Y" type="double"><description>Next rotate around old Z with Y(aw) in radians</description><value>0</value></simple>
+           </struct>
+        </struct>
+     </struct>
+  </struct>
+</properties>
