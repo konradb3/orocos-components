@@ -1,26 +1,25 @@
 
-
 #include "edp_irp6p.hpp"
 #include <ocl/ComponentLoader.hpp>
 
 namespace orocos_test
 {
-edp_irp6p::edp_irp6p(std::string name)
-      :	TaskContext(name),
+edp_irp6p::edp_irp6p(std::string name) :
+	TaskContext(name),
 	positionSetpoint_port("Position_setpoint"),
 	positionCurrent_port("Current_position"),
-	number_of_axes("IRP6P_NUM_AXES",6)
+	number_of_axes("IRP6P_NUM_AXES", 6)
 {
-  this->ports()->addPort(&positionSetpoint_port);
-  this->ports()->addPort(&positionCurrent_port);
+	this->ports()->addPort(&positionSetpoint_port);
+	this->ports()->addPort(&positionCurrent_port);
 
-  this->attributes()->addConstant(&number_of_axes);
+	this->attributes()->addConstant(&number_of_axes);
 
 }
 
 bool edp_irp6p::configureHook()
 {
-  return true;
+	return true;
 }
 
 bool edp_irp6p::startHook()
@@ -32,18 +31,18 @@ bool edp_irp6p::startHook()
 	joint_pos[3] = -0.8;
 	joint_pos[4] = -2.0;
 	joint_pos[5] = 1.0;
-  
-  return true;
+
+	return true;
 }
 
 void edp_irp6p::updateHook()
 {
 
-	if(joint_pos.size() == 6)
-  		positionCurrent_port.Set(joint_pos);
+	if (joint_pos.size() == 6)
+		positionCurrent_port.Set(joint_pos);
 
-	positionSetpoint_port.Get(joint_pos);	
-  //log(RTT::Error) << "test" << RTT::endlog();
+	positionSetpoint_port.Get(joint_pos);
+	//log(RTT::Error) << "test" << RTT::endlog();
 }
 
 void edp_irp6p::stopHook()

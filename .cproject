@@ -21,13 +21,13 @@
 <storageModule moduleId="org.eclipse.cdt.core.pathentry">
 <pathentry excluding="**/CMakeFiles/" kind="out" path=""/>
 <pathentry include="/usr/local/include" kind="inc" path="" system="true"/>
-<pathentry include="/home/konradb3/orocos-test" kind="inc" path="" system="true"/>
-<pathentry include="/opt/intel/Compiler/11.1/056/mkl/include" kind="inc" path="" system="true"/>
-<pathentry include="/usr/lib/gcc/i686-pc-linux-gnu/4.1.2/include" kind="inc" path="" system="true"/>
+<pathentry include="/usr/include/eigen2" kind="inc" path="" system="true"/>
+<pathentry include="/home/konrad/workspace/Controller-Release@orocos-test" kind="inc" path="" system="true"/>
+<pathentry include="/usr/lib/gcc/i686-redhat-linux/4.4.2/include" kind="inc" path="" system="true"/>
 <pathentry include="/usr/include" kind="inc" path="" system="true"/>
-<pathentry include="/usr/lib/gcc/i686-pc-linux-gnu/4.1.2/include/g++-v4" kind="inc" path="" system="true"/>
-<pathentry include="/usr/lib/gcc/i686-pc-linux-gnu/4.1.2/include/g++-v4/i686-pc-linux-gnu" kind="inc" path="" system="true"/>
-<pathentry include="/usr/lib/gcc/i686-pc-linux-gnu/4.1.2/include/g++-v4/backward" kind="inc" path="" system="true"/>
+<pathentry include="/usr/include/c++/4.4.2" kind="inc" path="" system="true"/>
+<pathentry include="/usr/include/c++/4.4.2/i686-redhat-linux" kind="inc" path="" system="true"/>
+<pathentry include="/usr/include/c++/4.4.2/backward" kind="inc" path="" system="true"/>
 </storageModule>
 <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 <buildTargets>
@@ -63,6 +63,20 @@
 <buildCommand>/usr/bin/gmake</buildCommand>
 <buildArguments/>
 <buildTarget>edp_irp6p-gnulinux/fast</buildTarget>
+<stopOnError>true</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+</target>
+<target name="edp_irp6ot-gnulinux" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>/usr/bin/gmake</buildCommand>
+<buildArguments/>
+<buildTarget>edp_irp6ot-gnulinux</buildTarget>
+<stopOnError>true</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+</target>
+<target name="edp_irp6ot-gnulinux/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>/usr/bin/gmake</buildCommand>
+<buildArguments/>
+<buildTarget>edp_irp6ot-gnulinux/fast</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
 </target>

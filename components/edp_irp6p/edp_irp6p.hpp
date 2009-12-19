@@ -11,46 +11,45 @@
 #include <rtt/Properties.hpp>
 namespace orocos_test
 {
-class edp_irp6p 
-    : public RTT::TaskContext 
-  {
-  public:
+class edp_irp6p: public RTT::TaskContext
+{
+public:
 	edp_irp6p(std::string name);
-       /**
-        * This function is for the configuration code.
-	* Return false to abort configuration.
-	*/
+	/**
+	 * This function is for the configuration code.
+	 * Return false to abort configuration.
+	 */
 	bool configureHook();
-       /**
-        * This function is for the application's start up code.
-	* Return false to abort start up.
-	*/
+	/**
+	 * This function is for the application's start up code.
+	 * Return false to abort start up.
+	 */
 	bool startHook();
 
-       /**
-        * This function is called by the Execution Engine.
-	*/
+	/**
+	 * This function is called by the Execution Engine.
+	 */
 	void updateHook();
 
-       /**
-        * This function is called when the task is stopped.
-	*/
+	/**
+	 * This function is called when the task is stopped.
+	 */
 	void stopHook();
 
-       /**
-        * This function is called when the task is being deconfigured.
-	*/
+	/**
+	 * This function is called when the task is being deconfigured.
+	 */
 	void cleanupHook();
 
-  protected:
-		
+protected:
+
 	RTT::DataPort<std::vector<double> > positionSetpoint_port;
 
 	RTT::DataPort<std::vector<double> > positionCurrent_port;
 
 	RTT::Constant<unsigned int> number_of_axes;
-  private:
+private:
 	std::vector<double> joint_pos;
-  };
+};
 }
 #endif
