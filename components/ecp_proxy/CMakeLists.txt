@@ -1,0 +1,2 @@
+
+ADD_LIBRARY(ECP_proxy-${OROCOS_TARGET} SHARED ECP_proxy.cpp )

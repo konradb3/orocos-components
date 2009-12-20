@@ -108,6 +108,20 @@
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
 </target>
+<target name="ECP_proxy-gnulinux" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>/usr/bin/gmake</buildCommand>
+<buildArguments/>
+<buildTarget>ECP_proxy-gnulinux</buildTarget>
+<stopOnError>true</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+</target>
+<target name="ECP_proxy-gnulinux/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>/usr/bin/gmake</buildCommand>
+<buildArguments/>
+<buildTarget>ECP_proxy-gnulinux/fast</buildTarget>
+<stopOnError>true</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+</target>
 </buildTargets>
 </storageModule>
 <storageModule moduleId="scannerConfiguration">

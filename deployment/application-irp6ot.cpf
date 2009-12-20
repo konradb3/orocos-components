@@ -3,7 +3,7 @@
 <properties>
 
   <!-- Structure of this file:
-  
+
      |-  Component 1
      |     |- Property file
      |     |- Activity info
@@ -27,7 +27,7 @@
   <simple name="Import" type="string"><value>/usr/local/lib/rtt/gnulinux/plugins/liborocos-kdltk-gnulinux</value></simple>
 
 
-  <simple name="Import" type="string"><value>components/edp_irp6p</value></simple>
+  <simple name="Import" type="string"><value>components/ecp_proxy</value></simple>
   <simple name="Import" type="string"><value>components/edp_irp6ot</value></simple>
 
   <simple name="Import" type="string"><value>components/viz_zbik3d</value></simple>
@@ -62,7 +62,7 @@
 
 	<simple name="PropertyFile" type="string"><value>deployment/viz_zbik3d-irp6ot.cpf</value></simple>
 
-    
+
    	<struct name="Ports" type="PropertyBag">
      		<simple name="Position_input" type="string"><value>CurPosition_irp6ot </value></simple>
    	</struct>
@@ -74,7 +74,7 @@
 
   <struct name="transformator_irp6ot" type="orocos_test::transformator">
     	<struct name="Activity" type="PeriodicActivity">
-    		<simple name="Period" type="double"><value>0.05</value></simple>
+    		<simple name="Period" type="double"><value>0.1</value></simple>
     		<simple name="Priority" type="short"><value>0</value></simple>
     		<simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
   	</struct>
@@ -103,7 +103,7 @@
     		<simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
   	</struct>
   	<simple name="AutoConf" type="boolean"><value>1</value></simple>
-  	<simple name="AutoStart" type="boolean"><value>1</value></simple>
+  	<simple name="AutoStart" type="boolean"><value>0</value></simple>
 
   	<simple name="PropertyFile" type="string"><value>deployment/CartesianGeneratorPos.cpf</value></simple>
 
@@ -111,6 +111,23 @@
      		<simple name="CartesianSensorPosition" type="string"><value>CartesianSensorPosition_irp6ot</value></simple>
     		<simple name="CartesianDesiredPosition" type="string"><value>CartesianDesiredPosition_irp6ot</value></simple>
   	</struct>
+  </struct>
+
+  <struct name="ECP_proxy" type="orocos_test::ECP_proxy">
+  	<struct name="Activity" type="PeriodicActivity">
+    		<simple name="Period" type="double"><value>0.01</value></simple>
+    		<simple name="Priority" type="short"><value>0</value></simple>
+    		<simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
+  	</struct>
+  	<simple name="AutoConf" type="boolean"><value>1</value></simple>
+  	<simple name="AutoStart" type="boolean"><value>0</value></simple>
+
+   	<struct name="Ports" type="PropertyBag">
+     		<simple name="Joint_Position_input" type="string"><value>CurPosition_irp6ot </value></simple>
+     		<simple name="Joint_Setpoint_output" type="string"><value>Setpoint_irp6ot </value></simple>
+     		<simple name="Cartesian_Position_input" type="string"><value>CartesianSensorPosition_irp6ot</value></simple>
+    		<simple name="Cartesian_Setpoint_output" type="string"><value>CartesianDesiredPosition_irp6ot</value></simple>
+   	</struct>
   </struct>
 
 </properties>
