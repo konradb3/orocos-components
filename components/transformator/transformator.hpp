@@ -41,7 +41,7 @@ public:
 	/**
 	 * This function is called by the Execution Engine.
 	 */
-	void updateHook();
+	void updateHook(const std::vector<RTT::PortInterface*>& updatedPorts);
 
 	/**
 	 * This function is called when the task is stopped.
@@ -59,7 +59,6 @@ protected:
 	RTT::DataPort<KDL::Frame> cartpos_port;
 	RTT::DataPort<std::vector<double> > position_port;
 	RTT::DataPort<std::vector<double> > Setpoint_port;
-	RTT::Command<bool(double, int)> move;
 
 	RTT::Property<KDL::Chain> chain_prop;
 	RTT::Property<std::vector<double> > qmin_prop;
@@ -84,9 +83,6 @@ private:
 
 	unsigned int nj;
 	bool kinematics_status;
-
-	bool move_impl(double pos, int servo_id);
-	bool atpos_impl(double a);
 
 	bool init;
 };

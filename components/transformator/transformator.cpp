@@ -17,142 +17,146 @@
 
 namespace orocos_test
 {
-using namespace KDL;
-transformator::transformator(std::string name) :
-	TaskContext(name, PreOperational),
-	cartpos_setpoint_port("cartpos_setpoint"), cartpos_port("cartpos"),
-	position_port("Position_input"),
-	Setpoint_port("Setpoint_output"),
-	move("move", &transformator::move_impl, &transformator::atpos_impl,this),
-	chain_prop("Chain", "Kinematic Description of the robot chain"),
-	qmin_prop("qmin", "Position lower limit for joints"),
-	qmax_prop("qmax", "Position upper limit for joints")
+  using namespace KDL;
+  transformator::transformator(std::string name) :
+    TaskContext(name, PreOperational),
+        cartpos_setpoint_port("cartpos_setpoint"), cartpos_port("cartpos"),
+        position_port("Position_input"), Setpoint_port("Setpoint_output"),
+        chain_prop("Chain", "Kinematic Description of the robot chain"),
+        qmin_prop("qmin", "Position lower limit for joints"), qmax_prop("qmax",
+            "Position upper limit for joints")
 
-{
-	this->ports()->addPort(&cartpos_setpoint_port);
-	this->ports()->addPort(&cartpos_port);
-	this->ports()->addPort(&Setpoint_port);
-	this->ports()->addPort(&position_port);
+  {
+    this->ports()->addEventPort(&cartpos_setpoint_port);
+    this->ports()->addPort(&cartpos_port);
+    this->ports()->addPort(&Setpoint_port);
+    this->ports()->addEventPort(&position_port);
 
-	this->commands()->addCommand(&move, "move servo to position", "pos",
-			"servo pos", "id", "servo id");
+    this->properties()->addProperty(&chain_prop);
+    this->properties()->addProperty(&qmin_prop);
+    this->properties()->addProperty(&qmax_prop);
 
-	this->properties()->addProperty(&chain_prop);
-	this->properties()->addProperty(&qmin_prop);
-	this->properties()->addProperty(&qmax_prop);
+  }
+
+  bool
+  transformator::configureHook()
+  {
+    //chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame(KDL::Vector(0.0,0.0,0.52))));
+    //chain.addSegment(Segment(Joint(Joint::RotX),Frame(KDL::Vector(0.0,0.455,0.0))));
+    //chain.addSegment(Segment(Joint(Joint::RotX),Frame(Vector(0.0,0.0,-0.67))));
+    //chain.addSegment(Segment(Joint(Joint::RotX)));
+    //chain.addSegment(Segment(Joint(Joint::RotZ),Frame(Vector(0.0,0.0,-0.19))));
+    //chain.addSegment(Segment(Joint(Joint::RotX),Frame(Vector(0.1,0.0,0.0))));
+
+    std::vector<double> _qmin;
+    std::vector<double> _qmax;
+
+    chain = chain_prop.get();
+
+    nj = chain.getNrOfJoints();
+    jointpositions = new KDL::JntArray(nj);
+    jointsetpoints = new KDL::JntArray(nj);
+    qmin = new KDL::JntArray(nj);
+    qmax = new KDL::JntArray(nj);
+    joint_setpoint.resize(nj);
+
+    _qmin = qmin_prop.get();
+    for (unsigned int i = 0; i < _qmin.size(); i++)
+      (*qmin)(i) = _qmin[i];
+
+    _qmax = qmax_prop.get();
+    for (unsigned int i = 0; i < _qmax.size(); i++)
+      (*qmax)(i) = _qmax[i];
+
+    fksolver = new KDL::ChainFkSolverPos_recursive(chain);
+    iksolver_vel = new KDL::ChainIkSolverVel_pinv(chain);
+    iksolver = new KDL::ChainIkSolverPos_NR_JL(chain, *qmin, *qmax, *fksolver,
+        *iksolver_vel, 5000, 1e-6);
+    return true;
+  }
+
+  bool
+  transformator::startHook()
+  {
+    init = true;
+    return true;
+  }
+
+  void
+  transformator::updateHook(
+      const std::vector<RTT::PortInterface*>& updatedPorts)
+  {
+
+    bool cartpos_setpoint_update = false;
+    bool Position_input_update = false;
+
+    for (unsigned int i = 0; i < updatedPorts.size(); i++)
+      if (updatedPorts[i]->getName() == "cartpos_setpoint")
+        {
+        cartpos_setpoint_update = true;
+        } else if (updatedPorts[i]->getName() == "Position_input")
+          {
+        Position_input_update = true;
+          }
+
+    if (Position_input_update)
+      {
+        position_port.Get(joint_position);
+
+        if ((nj == joint_position.size()))
+          {
+            for (unsigned int i = 0; i < nj; i++)
+              (*jointpositions)(i) = joint_position[i];
+            //Calculate forward position kinematics
+            kinematics_status = fksolver->JntToCart(*jointpositions, cartpos);
+            //Only set result to port if it was calcuted correctly
+            if (kinematics_status >= 0)
+              cartpos_port.Set(cartpos);
+            else
+              log(RTT::Error) << "Could not calculate forward kinematics"
+                  << RTT::endlog();
+
+          }
+      }
+
+    if (cartpos_setpoint_update)
+      {
+
+        cartpos_setpoint_port.Get(Setpoint);
+        //Calculate inverse position kinematics
+        kinematics_status = iksolver->CartToJnt(*jointpositions, Setpoint,
+            *jointsetpoints);
+
+        if (kinematics_status < 0)
+          {
+            (*jointsetpoints) = (*jointpositions);
+            log(RTT::Error) << "Could not calculate inverse kinematics"
+                << RTT::endlog();
+          }
+
+        for (unsigned int i = 0; i < nj; i++)
+          joint_setpoint[i] = (*jointsetpoints)(i);
+
+        Setpoint_port.Set(joint_setpoint);
+      }
+
+  }
+
+  void
+  transformator::stopHook()
+  {
+
+  }
+
+  void
+  transformator::cleanupHook()
+  {
+    delete fksolver;
+    delete iksolver_vel;
+    delete iksolver;
+  }
 
 }
 
-bool transformator::configureHook()
-{
-	//chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame(KDL::Vector(0.0,0.0,0.52))));
-	//chain.addSegment(Segment(Joint(Joint::RotX),Frame(KDL::Vector(0.0,0.455,0.0))));
-	//chain.addSegment(Segment(Joint(Joint::RotX),Frame(Vector(0.0,0.0,-0.67))));
-	//chain.addSegment(Segment(Joint(Joint::RotX)));
-	//chain.addSegment(Segment(Joint(Joint::RotZ),Frame(Vector(0.0,0.0,-0.19))));
-	//chain.addSegment(Segment(Joint(Joint::RotX),Frame(Vector(0.1,0.0,0.0))));
-
-	std::vector<double> _qmin;
-	std::vector<double> _qmax;
-
-	chain = chain_prop.get();
-
-	nj = chain.getNrOfJoints();
-	jointpositions = new KDL::JntArray(nj);
-	jointsetpoints = new KDL::JntArray(nj);
-	qmin = new KDL::JntArray(nj);
-	qmax = new KDL::JntArray(nj);
-	joint_setpoint.resize(nj);
-
-	_qmin = qmin_prop.get();
-	for (unsigned int i = 0; i < _qmin.size(); i++)
-		(*qmin)(i) = _qmin[i];
-
-	_qmax = qmax_prop.get();
-	for (unsigned int i = 0; i < _qmax.size(); i++)
-		(*qmax)(i) = _qmax[i];
-
-	fksolver = new KDL::ChainFkSolverPos_recursive(chain);
-	iksolver_vel = new KDL::ChainIkSolverVel_pinv(chain);
-	iksolver = new KDL::ChainIkSolverPos_NR_JL(chain, *qmin, *qmax, *fksolver,
-			*iksolver_vel, 5000, 1e-6);
-	return true;
-}
-
-bool transformator::startHook()
-{
-	init = true;
-	return true;
-}
-
-void transformator::updateHook()
-{
-	position_port.Get(joint_position);
-	cartpos_setpoint_port.Get(Setpoint);
-
-	if ((nj == joint_position.size()))
-	{
-		for (unsigned int i = 0; i < nj; i++)
-			(*jointpositions)(i) = joint_position[i];
-		//Calculate forward position kinematics
-		kinematics_status = fksolver->JntToCart(*jointpositions, cartpos);
-		//Only set result to port if it was calcuted correctly
-		if (kinematics_status >= 0)
-			cartpos_port.Set(cartpos);
-		else
-			log(RTT::Error) << "Could not calculate forward kinematics"
-					<< RTT::endlog();
-		if (init)
-		{
-			Setpoint = cartpos;
-			cartpos_setpoint_port.Set(cartpos);
-			init = false;
-		}
-		//Calculate inverse position kinematics
-		kinematics_status = iksolver->CartToJnt(*jointpositions, Setpoint,
-				*jointsetpoints);
-
-		if (kinematics_status < 0)
-		{
-			(*jointsetpoints) = (*jointpositions);
-			log(RTT::Error) << "Could not calculate inverse kinematics"
-					<< RTT::endlog();
-		}
-
-		for (unsigned int i = 0; i < nj; i++)
-			joint_setpoint[i] = (*jointsetpoints)(i);
-
-		Setpoint_port.Set(joint_setpoint);
-
-	}
-
-}
-
-void transformator::stopHook()
-{
-
-}
-
-void transformator::cleanupHook()
-{
-	delete fksolver;
-	delete iksolver_vel;
-	delete iksolver;
-}
-
-bool transformator::move_impl(double pos, int servo_id)
-{
-	joint_setpoint[servo_id] = pos;
-	Setpoint_port.Set(joint_setpoint);
-
-	return true;
-}
-
-bool transformator::atpos_impl(double a)
-{
-	return true;
-}
-
-}
-
-ORO_CREATE_COMPONENT( orocos_test::transformator );
+ORO_CREATE_COMPONENT( orocos_test::transformator )
+;

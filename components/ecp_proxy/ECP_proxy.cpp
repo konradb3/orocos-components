@@ -290,7 +290,6 @@ mrrocpp::lib::INSTRUCTION_TYPE ECP_proxy::receive_instruction(void)
 	// oczekuje na polecenie od ECP, wczytuje je oraz zwraca jego typ
 	int rcvid;
 	/* Oczekiwanie na polecenie od ECP */
-	log(RTT::Info) << "EDP : receive_instruction" << RTT::endlog();
 	/* Do your MsgReceive's here now with the chid */
 	while (1)
 	{
@@ -338,7 +337,6 @@ void ECP_proxy::reply_to_instruction(void)
 	{
 		log(RTT::Error) << "EDP : reply error" << RTT::endlog();
 	}
-	log(RTT::Error) << "reply send" << RTT::endlog();
 	real_reply_type = lib::ACKNOWLEDGE;
 }
 
@@ -448,8 +446,8 @@ void ECP_proxy::interpret_instruction(lib::c_buffer &instruction)
 			// move_arm();
 			move_arm(instruction);
 			instruction.get_arm_type = instruction.set_arm_type;
-			get_arm_position(instruction);
-			instruction.get_arm_type = lib::INVALID_END_EFFECTOR;
+			//get_arm_position(instruction);
+			//instruction.get_arm_type = lib::INVALID_END_EFFECTOR;
 		}
 
 		break;
@@ -505,7 +503,7 @@ void ECP_proxy::interpret_instruction(lib::c_buffer &instruction)
 			break;
 		case lib::RMODEL_INPUTS:
 			// ewentualna aktualizacja numerow algorytmow i ich zestawow parametrow
-			if (instruction.get_rmodel_type == lib::SERVO_ALGORITHM)
+			if (instruction.get_rmodel_type == lib::SERVO_ALGORITHM);
 				// get_algorithms();
 				//master_order(MT_GET_ALGORITHMS, 0);
 				// odczytanie wej
@@ -567,10 +565,10 @@ void ECP_proxy::interpret_instruction(lib::c_buffer &instruction)
 			break;
 		case lib::ARM:
 			// odczytanie TCP i orientacji koncowki
-			if (instruction.set_type & ARM_DV)
-				;//get_arm_position(false, instruction);
-			else
-				;// get_arm_position(true);
+			//if (instruction.set_type & ARM_DV)
+			//	;//get_arm_position(false, instruction);
+			//else
+			//	;// get_arm_position(true);
 			get_arm_position(instruction);
 			break;
 		case lib::RMODEL:
@@ -589,11 +587,11 @@ void ECP_proxy::interpret_instruction(lib::c_buffer &instruction)
 			break;
 		case lib::ARM_RMODEL:
 			// odczytanie TCP i orientacji koncowki
-			if (instruction.set_type & ARM_DV)
+			//if (instruction.set_type & ARM_DV)
 				;//get_arm_position(false, instruction);
-			else
+			//else
 				// get_arm_position(true);
-				get_arm_position(instruction);
+				//get_arm_position(instruction);
 			// odczytanie aktualnie uzywanego modelu robota (narzedzie, model kinematyczny,
 			// jego korektor, nr algorytmu regulacji i zestawu jego parametrow)
 			//get_rmodel(instruction);
@@ -602,11 +600,11 @@ void ECP_proxy::interpret_instruction(lib::c_buffer &instruction)
 			// odczytanie wejsc
 			//get_inputs(&reply);
 			// odczytanie TCP i orientacji koncowki
-			if (instruction.set_type & ARM_DV)
+			//if (instruction.set_type & ARM_DV)
 				;//get_arm_position(false, instruction);
-			else
+			//else
 				// get_arm_position(true);
-				get_arm_position(instruction);
+				//get_arm_position(instruction);
 			break;
 		case lib::RMODEL_INPUTS:
 			if (!(instruction.set_type & ARM_DV))
@@ -623,15 +621,15 @@ void ECP_proxy::interpret_instruction(lib::c_buffer &instruction)
 		case lib::ARM_RMODEL_INPUTS:
 			// odczytanie wejsc
 			//get_inputs(&reply);
-			if (instruction.set_type & ARM_DV)
-				;//get_arm_position(false, instruction);
-			else
+			//if (instruction.set_type & ARM_DV)
+			//	;//get_arm_position(false, instruction);
+			//else
 				// get_arm_position(true);
-				get_arm_position(instruction);
+				//get_arm_position(instruction);
 			// odczytanie aktualnie uzywanego modelu robota (narzedzie, model kinematyczny,
 			// jego korektor, nr algorytmu regulacji i zestawu jego parametrow)
 			//get_rmodel(instruction);
-			break;
+			//break;
 			// odczytanie TCP i orientacji koncowki
 			break;
 		default: // blad
@@ -701,40 +699,45 @@ void ECP_proxy::move_arm(lib::c_buffer &instruction)
 		switch (instruction.motion_type)
 		{
 		case lib::ABSOLUTE: // ruch bezwzgledny
-			Cartesian_Setpoint = KDL::Frame(KDL::Rotation(	reply.arm.pf_def.arm_frame[0][0],
-															reply.arm.pf_def.arm_frame[0][1],
-															reply.arm.pf_def.arm_frame[0][2],
-															reply.arm.pf_def.arm_frame[1][0],
-															reply.arm.pf_def.arm_frame[1][1],
-															reply.arm.pf_def.arm_frame[1][2],
-															reply.arm.pf_def.arm_frame[2][0],
-															reply.arm.pf_def.arm_frame[2][1],
-															reply.arm.pf_def.arm_frame[2][2]),
-											KDL::Vector(	reply.arm.pf_def.arm_frame[0][3],
-															reply.arm.pf_def.arm_frame[1][3],
-															reply.arm.pf_def.arm_frame[2][3]));
+		  log(RTT::Error) << "EDP : Frame absolute move" << RTT::endlog();
+			Cartesian_Setpoint = KDL::Frame(KDL::Rotation(	instruction.arm.pf_def.arm_frame[0][0],
+			    instruction.arm.pf_def.arm_frame[0][1],
+			    instruction.arm.pf_def.arm_frame[0][2],
+			    instruction.arm.pf_def.arm_frame[1][0],
+			    instruction.arm.pf_def.arm_frame[1][1],
+			    instruction.arm.pf_def.arm_frame[1][2],
+			    instruction.arm.pf_def.arm_frame[2][0],
+			    instruction.arm.pf_def.arm_frame[2][1],
+			    instruction.arm.pf_def.arm_frame[2][2]),
+											KDL::Vector(	instruction.arm.pf_def.arm_frame[0][3],
+											    instruction.arm.pf_def.arm_frame[1][3],
+											    instruction.arm.pf_def.arm_frame[2][3]));
 			break;
 		case lib::RELATIVE: // ruch wzgledny
 		{
+		  log(RTT::Error) << "EDP : Frame relative move" << RTT::endlog();
+
 			KDL::Frame relFrame(KDL::Rotation(	reply.arm.pf_def.arm_frame[0][0],
-												reply.arm.pf_def.arm_frame[0][1],
-												reply.arm.pf_def.arm_frame[0][2],
-												reply.arm.pf_def.arm_frame[1][0],
-												reply.arm.pf_def.arm_frame[1][1],
-												reply.arm.pf_def.arm_frame[1][2],
-												reply.arm.pf_def.arm_frame[2][0],
-												reply.arm.pf_def.arm_frame[2][1],
-												reply.arm.pf_def.arm_frame[2][2]),
-								KDL::Vector(	reply.arm.pf_def.arm_frame[0][3],
-												reply.arm.pf_def.arm_frame[1][3],
-												reply.arm.pf_def.arm_frame[2][3]));
+			    instruction.arm.pf_def.arm_frame[0][1],
+			    instruction.arm.pf_def.arm_frame[0][2],
+			    instruction.arm.pf_def.arm_frame[1][0],
+			    instruction.arm.pf_def.arm_frame[1][1],
+			    instruction.arm.pf_def.arm_frame[1][2],
+			    instruction.arm.pf_def.arm_frame[2][0],
+			    instruction.arm.pf_def.arm_frame[2][1],
+			    instruction.arm.pf_def.arm_frame[2][2]),
+								KDL::Vector(	instruction.arm.pf_def.arm_frame[0][3],
+								    instruction.arm.pf_def.arm_frame[1][3],
+								    instruction.arm.pf_def.arm_frame[2][3]));
 			Cartesian_Setpoint = Cartesian_Setpoint * relFrame;
 		}
 			break;
 		default:
 			break;
 		}
+		log(RTT::Error) << "EDP : Frame data send" << RTT::endlog();
 		Cartesian_Setpoint_port.Set(Cartesian_Setpoint);
+		log(RTT::Error) << "cart pos recieved :" << instruction.arm.pf_def.arm_frame[0][3] << instruction.arm.pf_def.arm_frame[1][3] << instruction.arm.pf_def.arm_frame[2][3] << RTT::endlog();
 		break;
 	case lib::MOTOR:
 	default: // blad: niezdefiniowany sposb specyfikacji pozycji koncowki
