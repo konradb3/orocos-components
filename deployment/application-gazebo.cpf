@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+
+  <!-- Structure of this file:
+
+     |-  Component 1
+     |     |- Property file
+     |     |- Activity info
+     |     |- Peer connections
+     |     |- Port connections
+     |     \- Scripts to load
+     |
+     |-  Component 2
+     |     |- Property file
+     |     |- Activity info
+     |     |- Peer connections
+     |     |- Port connections
+     |     \- Scripts to load
+     ...
+  -->
+
+  <simple name="Import" type="string"><value>/usr/local/lib/liborocos-reporting</value></simple>
+  <simple name="Import" type="string"><value>/usr/local/lib/liborocos-timer</value></simple>
+  <simple name="Import" type="string"><value>/usr/local/lib/liborocos-cartesian</value></simple>
+
+  <simple name="Import" type="string"><value>/usr/local/lib/rtt/gnulinux/plugins/liborocos-kdltk-gnulinux</value></simple>
+
+
+  <simple name="Import" type="string"><value>components/ecp_proxy</value></simple>
+  <simple name="Import" type="string"><value>components/edp_irp6ot</value></simple>
+
+  <simple name="Import" type="string"><value>components/viz_zbik3d</value></simple>
+  <simple name="Import" type="string"><value>components/transformator</value></simple>
+
+  <simple name="Import" type="string"><value>components/gazebo_position</value></simple>
+  <simple name="Import" type="string"><value>components/gazebo_laser</value></simple>
+<!-- EDP's -->
+
+  <struct name="Gazebo_position" type="orocos_test::Gazebo_position">
+    	<struct name="Activity" type="PeriodicActivity">
+      		<simple name="Period" type="double"><value>0.01</value></simple>
+      		<simple name="Priority" type="short"><value>0</value></simple>
+    		<simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
+    	</struct>
+    	<simple name="AutoStart" type="boolean"><value>0</value></simple>
+
+    	<struct name="Properties" type="PropertyBag">
+      		<simple name="Position_Interface" type="string"><value>protonek_model::position_iface_0</value></simple>
+    	</struct>
+  </struct>
+
+  <struct name="Gazebo_laser" type="orocos_test::Gazebo_laser">
+    	<struct name="Activity" type="PeriodicActivity">
+      		<simple name="Period" type="double"><value>0.01</value></simple>
+      		<simple name="Priority" type="short"><value>0</value></simple>
+    		<simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
+    	</struct>
+    	<simple name="AutoStart" type="boolean"><value>0</value></simple>
+
+    	<struct name="Properties" type="PropertyBag">
+      		<simple name="Laser_Interface" type="string"><value>protonek_model::laser::laser_iface_0</value></simple>
+    	</struct>
+  </struct>
+
+</properties>
