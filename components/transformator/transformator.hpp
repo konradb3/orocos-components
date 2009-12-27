@@ -55,26 +55,31 @@ public:
 
 protected:
 
-	RTT::DataPort<KDL::Frame> cartpos_setpoint_port;
-	RTT::DataPort<KDL::Frame> cartpos_port;
-	RTT::DataPort<std::vector<double> > position_port;
-	RTT::DataPort<std::vector<double> > Setpoint_port;
+	RTT::DataPort<KDL::Frame> cartesianSetpoint_port;
+	RTT::DataPort<KDL::Frame> cartesianPosition_port;
+	RTT::DataPort<std::vector<double> > jointPosition_port;
+	RTT::DataPort<std::vector<double> > jointSetpoint_port;
 
 	RTT::Property<KDL::Chain> chain_prop;
 	RTT::Property<std::vector<double> > qmin_prop;
 	RTT::Property<std::vector<double> > qmax_prop;
+	RTT::Property<KDL::Frame> baseFrame_prop;
+	RTT::Property<KDL::Frame> toolFrame_prop;
 
 private:
-	std::vector<double> joint_setpoint, joint_position;
+	std::vector<double> jointSetpoint_tmp, jointPosition_tmp;
 
-	KDL::JntArray* jointpositions;
-	KDL::JntArray* jointsetpoints;
+	KDL::JntArray* jointPosition;
+	KDL::JntArray* jointSetpoint;
 
 	KDL::JntArray* qmin;
 	KDL::JntArray* qmax;
 
-	KDL::Frame cartpos;
-	KDL::Frame Setpoint;
+	KDL::Frame cartesianPosition;
+	KDL::Frame cartesianSetpoint;
+
+	KDL::Frame toolFrame;
+	KDL::Frame baseFrame;
 
 	KDL::Chain chain;
 	KDL::ChainFkSolverPos* fksolver;

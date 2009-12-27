@@ -1,13 +1,5 @@
-#SET( MODEL "plant" )
+OPTION( BUILD_edp_irp6p "Build edp_irp6p Component" ON )
 
-#ADD_CUSTOM_COMMAND( OUTPUT RTW${MODEL}-${OROCOS_TARGET}
-#                    COMMAND make -C ${CMAKE_CURRENT_SOURCE_DIR}/${MODEL}_orocos -f ${MODEL}.mk OROPATH=${OROCOS_INSTALL} USER_INCLUDES="-I${PROJ_SOURCE_DIR}" CC="${CMAKE_C_COMPILER}" CXX="${CMAKE_CXX_COMPILER}" OPT_OPTS="-g"
-#                    COMMAND mv ${CMAKE_CURRENT_SOURCE_DIR}/RTW${MODEL}.so RTW${MODEL}-${OROCOS_TARGET}.so
-#                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${MODEL}_orocos/${MODEL}.mk)
-
-#ADD_CUSTOM_TARGET( clean make -C  ${CMAKE_CURRENT_SOURCE_DIR}/${MODEL}_orocos -f ${MODEL}.mk clean )
-#ADD_CUSTOM_TARGET( clean DEPENDS clean-${MODEL})
-
-#ADD_CUSTOM_TARGET( Create-${MODEL} ALL DEPENDS RTW${MODEL}-${OROCOS_TARGET} )
-
-ADD_LIBRARY(edp_irp6p-${OROCOS_TARGET} SHARED edp_irp6p.cpp )
+if(BUILD_edp_irp6p)
+GLOBAL_ADD_COMPONENT(edp_irp6p edp_irp6p.cpp )
+endif(BUILD_edp_irp6p)

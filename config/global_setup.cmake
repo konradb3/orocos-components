@@ -4,6 +4,7 @@
 INCLUDE( ${CMAKE_ROOT}/Modules/CheckIncludeFileCXX.cmake )
 INCLUDE( ${CMAKE_ROOT}/Modules/CheckIncludeFile.cmake )
 
+INCLUDE( ${PROJ_SOURCE_DIR}/config/DependentOption.cmake )
 
 #
 # If we're using gcc, make sure the version is OK.
@@ -30,15 +31,15 @@ INCLUDE( ${CMAKE_ROOT}/Modules/FindDoxygen.cmake )
 IF ( DOXYGEN )
   MESSAGE( "Found Doxygen -- documentation can be built" )
 
-  OPTION( GENERATE_DOCUMENTATION "Build Documentation" OFF )
-
 ELSE ( DOXYGEN )
   MESSAGE( "Doxygen not found -- unable to build documentation" )
 ENDIF ( DOXYGEN )
+
+DEPENDENT_OPTION( DOC_GENERATE_API "Build API Documentation" OFF "DOXYGEN" OFF )
 
 
 #
 # An option for tests, to make it easy to turn off all tests
 #
-OPTION( BUILD_TESTS "Turn me off to disable compilation of all tests" ON )
+OPTION( BUILD_TESTS "Turn me off to disable compilation of all tests" OFF )
 

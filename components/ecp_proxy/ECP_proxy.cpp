@@ -41,6 +41,24 @@ bool ECP_proxy::configureHook()
 {
 	Joint_Setpoint.resize(number_of_servos, 0.0);
 	Joint_Position.resize(number_of_servos, 0.0);
+
+	if (hasPeer("transformator"))
+	{
+		RTT::TaskContext *trans = getPeer("transformator");
+		toolFrame_ext_prop = trans->properties()->getProperty<KDL::Frame> (
+				"ToolFrame");
+		if (!toolFrame_ext_prop.ready())
+		{
+			log(RTT::Error) << "ToolFrame not implemented in transformator"
+					<< RTT::endlog();
+			return false;
+		}
+	}
+	else
+	{
+		log(RTT::Error) << "transformator not found" << RTT::endlog();
+		return false;
+	}
 	return true;
 }
 
@@ -51,7 +69,7 @@ bool ECP_proxy::startHook()
 
 	if (attach == NULL)
 	{
-		log(RTT::Error) << "EDP : failend to attach" << RTT::endlog();
+		log(RTT::Error) << "failend to attach" << RTT::endlog();
 		return false;
 	}
 
@@ -427,97 +445,81 @@ void ECP_proxy::interpret_instruction(lib::c_buffer &instruction)
 	case lib::SET:
 		// tu wykonanie instrukcji SET
 
-		if (instruction.set_type & OUTPUTS_DV)
-		{
+		if (instruction.set_type & OUTPUTS_DV) // ustawienie wyjsc
+			log(RTT::Warning) << "not implemented yet" << RTT::endlog();
 
-		}
-		// ustawienie wyjsc
-		//set_outputs(instruction);
-		if (instruction.set_type & RMODEL_DV)
-		{
+		if (instruction.set_type & RMODEL_DV) // zmiana modelu robota
+			setRModel(instruction);
+		//log(RTT::Warning) << "not implemented yet" << RTT::endlog();
 
-		}
-		// zmiana modelu robota
-		// set_rmodel();
-		//master_order(MT_SET_RMODEL, 0);
 		if (instruction.set_type & ARM_DV)
 		{
 			// przemieszczenie koncowki
-			// move_arm();
 			move_arm(instruction);
 			instruction.get_arm_type = instruction.set_arm_type;
-			//get_arm_position(instruction);
-			//instruction.get_arm_type = lib::INVALID_END_EFFECTOR;
+			get_arm_position(instruction);
+			instruction.get_arm_type = lib::INVALID_END_EFFECTOR;
 		}
 
 		break;
 	case lib::GET:
 		// tu wykonanie instrukcji GET
 		// ustalenie formatu odpowiedzi
-		//switch (rep_type(instruction))
-		switch (reply.reply_type)
+		switch (rep_type(instruction))
 		{
 		case lib::CONTROLLER_STATE:
 			// odczytanie TCP i orientacji koncowki
-			// get_arm_position(true);
-			//master_order(MT_GET_CONTROLLER_STATE, 0);
 			reply.controller_state.is_power_on = true;
 			reply.controller_state.is_robot_blocked = false;
 			reply.controller_state.is_synchronised = true;
 			reply.controller_state.is_wardrobe_on = false;
+
 			break;
 		case lib::ARM:
 			// odczytanie TCP i orientacji koncowki
-			// get_arm_position(true);
 			get_arm_position(instruction);
 			break;
 		case lib::RMODEL:
-			// ewentualna aktualizacja numerow algorytmow i ich zestawow parametrow
-			if (instruction.get_rmodel_type == lib::SERVO_ALGORITHM)
-			{
-				// get_algorithms();
-				// master_order(MT_GET_ALGORITHMS, 0);
-			}
 			// odczytanie aktualnie uzywanego modelu robota (narzedzie, model kinematyczny,
-			// jego korektor, nr algorytmu regulacji i zestawu jego parametrow)
-			//get_rmodel (instruction);
+			getRModel(instruction);
 			break;
 		case lib::INPUTS:
 			// odczytanie wejsc
-			//get_inputs(&reply);
+			log(RTT::Warning) << "not implemented yet" << RTT::endlog();
 			break;
 		case lib::ARM_RMODEL:
 			// odczytanie TCP i orientacji koncowki
 			// get_arm_position(true);
-			get_arm_position(instruction);
+			//get_arm_position(instruction);
 			// odczytanie aktualnie uzywanego modelu robota (narzedzie, model kinematyczny,
 			// jego korektor, nr algorytmu regulacji i zestawu jego parametrow)
-			//get_rmodel(instruction);
+			log(RTT::Warning) << "not implemented yet" << RTT::endlog();
 			break;
 		case lib::ARM_INPUTS:
 			// odczytanie wej
 			//get_inputs(&reply);
 			// odczytanie TCP i orientacji koncowki
 			// get_arm_position(true);
-			get_arm_position(instruction);
+			log(RTT::Warning) << "not implemented yet" << RTT::endlog();
 			break;
 		case lib::RMODEL_INPUTS:
 			// ewentualna aktualizacja numerow algorytmow i ich zestawow parametrow
-			if (instruction.get_rmodel_type == lib::SERVO_ALGORITHM);
-				// get_algorithms();
-				//master_order(MT_GET_ALGORITHMS, 0);
-				// odczytanie wej
-				//get_inputs(&reply);
-				// odczytanie aktualnie uzywanego modelu robota (narzedzie, model kinematyczny,
-				// jego korektor, nr algorytmu regulacji i zestawu jego parametrow)
-				//get_rmodel(instruction);
-				break;
+			if (instruction.get_rmodel_type == lib::SERVO_ALGORITHM)
+				;
+			// get_algorithms();
+			//master_order(MT_GET_ALGORITHMS, 0);
+			// odczytanie wej
+			//get_inputs(&reply);
+			// odczytanie aktualnie uzywanego modelu robota (narzedzie, model kinematyczny,
+			// jego korektor, nr algorytmu regulacji i zestawu jego parametrow)
+			log(RTT::Warning) << "not implemented yet" << RTT::endlog();
+			break;
 		case lib::ARM_RMODEL_INPUTS:
 			// odczytanie wejsc
 			//get_inputs(&reply);
 			// odczytanie TCP i orientacji koncowki
 			// get_arm_position(true);
-			get_arm_position(instruction);
+			log(RTT::Warning) << "not implemented yet" << RTT::endlog();
 			// odczytanie aktualnie uzywanego modelu robota (narzedzie, model kinematyczny,
 			// jego korektor, nr algorytmu regulacji i zestawu jego parametrow)
 			//get_rmodel(instruction);
@@ -532,26 +534,12 @@ void ECP_proxy::interpret_instruction(lib::c_buffer &instruction)
 		// tu wykonanie instrukcji SET i GET
 		// Cz SET
 		if (instruction.set_type & OUTPUTS_DV)
-		{
-			// ustawienie wyj
-			//set_outputs(instruction);
-		}
+			log(RTT::Warning) << "not implemented yet" << RTT::endlog();
 		if (instruction.set_type & RMODEL_DV)
-		{
-			// zmiana aktualnie uzywanego modelu robota (narzedzie, model kinematyczny,
-			// jego korektor, nr algorytmu regulacji i zestawu jego parametrow)
-			//        set_rmodel();
-			//master_order(MT_SET_RMODEL, 0);
-		}
+			log(RTT::Warning) << "not implemented yet" << RTT::endlog();
 		if (instruction.set_type & ARM_DV)
-		{
 			move_arm(instruction);
-			// przemieszczenie koncowki
-			/// move_arm();
-			//master_order(MT_MOVE_ARM, 0);
-			// Cz GET
-			// ustalenie formatu odpowiedzi
-		}
+
 		switch (rep_type(instruction))
 		{
 		case lib::CONTROLLER_STATE:
@@ -564,47 +552,42 @@ void ECP_proxy::interpret_instruction(lib::c_buffer &instruction)
 			reply.controller_state.is_wardrobe_on = false;
 			break;
 		case lib::ARM:
-			// odczytanie TCP i orientacji koncowki
-			//if (instruction.set_type & ARM_DV)
-			//	;//get_arm_position(false, instruction);
-			//else
-			//	;// get_arm_position(true);
 			get_arm_position(instruction);
 			break;
 		case lib::RMODEL:
-			if (!(instruction.set_type & ARM_DV))
-				// ewentualna aktualizacja numerow algorytmow i ich zestawow parametrow
-				if (instruction.get_rmodel_type == lib::SERVO_ALGORITHM)
-					// get_algorithms();
-					//master_order(MT_GET_ALGORITHMS, 0);
-					// odczytanie aktualnie uzywanego modelu robota (narzedzie, model kinematyczny,
-					// jego korektor, nr algorytmu regulacji i zestawu jego parametrow)
-					//get_rmodel(instruction);
-					break;
+			//if (!(instruction.set_type & ARM_DV))
+			// ewentualna aktualizacja numerow algorytmow i ich zestawow parametrow
+			//if (instruction.get_rmodel_type == lib::SERVO_ALGORITHM)
+			// get_algorithms();
+			//master_order(MT_GET_ALGORITHMS, 0);
+			// odczytanie aktualnie uzywanego modelu robota (narzedzie, model kinematyczny,
+			// jego korektor, nr algorytmu regulacji i zestawu jego parametrow)
+			getRModel(instruction);
+			break;
 		case lib::INPUTS:
 			// odczytanie wej
-			//get_inputs(&reply);
+			log(RTT::Warning) << "not implemented yet" << RTT::endlog();
 			break;
 		case lib::ARM_RMODEL:
 			// odczytanie TCP i orientacji koncowki
 			//if (instruction.set_type & ARM_DV)
-				;//get_arm_position(false, instruction);
+			;//get_arm_position(false, instruction);
 			//else
-				// get_arm_position(true);
-				//get_arm_position(instruction);
+			// get_arm_position(true);
+			//get_arm_position(instruction);
 			// odczytanie aktualnie uzywanego modelu robota (narzedzie, model kinematyczny,
 			// jego korektor, nr algorytmu regulacji i zestawu jego parametrow)
-			//get_rmodel(instruction);
+			log(RTT::Warning) << "not implemented yet" << RTT::endlog();
 			break;
 		case lib::ARM_INPUTS:
 			// odczytanie wejsc
 			//get_inputs(&reply);
 			// odczytanie TCP i orientacji koncowki
 			//if (instruction.set_type & ARM_DV)
-				;//get_arm_position(false, instruction);
+			;//get_arm_position(false, instruction);
 			//else
-				// get_arm_position(true);
-				//get_arm_position(instruction);
+			// get_arm_position(true);
+			log(RTT::Warning) << "not implemented yet" << RTT::endlog();
 			break;
 		case lib::RMODEL_INPUTS:
 			if (!(instruction.set_type & ARM_DV))
@@ -616,7 +599,8 @@ void ECP_proxy::interpret_instruction(lib::c_buffer &instruction)
 			//get_inputs(&reply);
 			// odczytanie aktualnie uzywanego modelu robota (narzedzie, model kinematyczny,
 			// jego korektor, nr algorytmu regulacji i zestawu jego parametrow)
-			//get_rmodel(instruction);
+			getRModel(instruction);
+			log(RTT::Warning) << "not implemented yet" << RTT::endlog();
 			break;
 		case lib::ARM_RMODEL_INPUTS:
 			// odczytanie wejsc
@@ -624,23 +608,18 @@ void ECP_proxy::interpret_instruction(lib::c_buffer &instruction)
 			//if (instruction.set_type & ARM_DV)
 			//	;//get_arm_position(false, instruction);
 			//else
-				// get_arm_position(true);
-				//get_arm_position(instruction);
+			// get_arm_position(true);
+			//get_arm_position(instruction);
 			// odczytanie aktualnie uzywanego modelu robota (narzedzie, model kinematyczny,
 			// jego korektor, nr algorytmu regulacji i zestawu jego parametrow)
-			//get_rmodel(instruction);
-			//break;
-			// odczytanie TCP i orientacji koncowki
+			getRModel(instruction);
+			log(RTT::Warning) << "not implemented yet" << RTT::endlog();
 			break;
 		default: // blad
-			// ustawi numer bledu
-			//throw NonFatal_error_2(INVALID_REPLY_TYPE);
 			break;
 		}
 		break;
 	default: // blad
-		// ustawi numer bledu
-		//throw NonFatal_error_2(INVALID_INSTRUCTION_TYPE);
 		break;
 	}
 
@@ -699,36 +678,37 @@ void ECP_proxy::move_arm(lib::c_buffer &instruction)
 		switch (instruction.motion_type)
 		{
 		case lib::ABSOLUTE: // ruch bezwzgledny
-		  log(RTT::Error) << "EDP : Frame absolute move" << RTT::endlog();
-			Cartesian_Setpoint = KDL::Frame(KDL::Rotation(	instruction.arm.pf_def.arm_frame[0][0],
-			    instruction.arm.pf_def.arm_frame[0][1],
-			    instruction.arm.pf_def.arm_frame[0][2],
-			    instruction.arm.pf_def.arm_frame[1][0],
-			    instruction.arm.pf_def.arm_frame[1][1],
-			    instruction.arm.pf_def.arm_frame[1][2],
-			    instruction.arm.pf_def.arm_frame[2][0],
-			    instruction.arm.pf_def.arm_frame[2][1],
-			    instruction.arm.pf_def.arm_frame[2][2]),
-											KDL::Vector(	instruction.arm.pf_def.arm_frame[0][3],
-											    instruction.arm.pf_def.arm_frame[1][3],
-											    instruction.arm.pf_def.arm_frame[2][3]));
+			log(RTT::Error) << "EDP : Frame absolute move" << RTT::endlog();
+			Cartesian_Setpoint = KDL::Frame(KDL::Rotation(
+					instruction.arm.pf_def.arm_frame[0][0],
+					instruction.arm.pf_def.arm_frame[0][1],
+					instruction.arm.pf_def.arm_frame[0][2],
+					instruction.arm.pf_def.arm_frame[1][0],
+					instruction.arm.pf_def.arm_frame[1][1],
+					instruction.arm.pf_def.arm_frame[1][2],
+					instruction.arm.pf_def.arm_frame[2][0],
+					instruction.arm.pf_def.arm_frame[2][1],
+					instruction.arm.pf_def.arm_frame[2][2]), KDL::Vector(
+					instruction.arm.pf_def.arm_frame[0][3],
+					instruction.arm.pf_def.arm_frame[1][3],
+					instruction.arm.pf_def.arm_frame[2][3]));
 			break;
 		case lib::RELATIVE: // ruch wzgledny
 		{
-		  log(RTT::Error) << "EDP : Frame relative move" << RTT::endlog();
+			log(RTT::Error) << "EDP : Frame relative move" << RTT::endlog();
 
-			KDL::Frame relFrame(KDL::Rotation(	reply.arm.pf_def.arm_frame[0][0],
-			    instruction.arm.pf_def.arm_frame[0][1],
-			    instruction.arm.pf_def.arm_frame[0][2],
-			    instruction.arm.pf_def.arm_frame[1][0],
-			    instruction.arm.pf_def.arm_frame[1][1],
-			    instruction.arm.pf_def.arm_frame[1][2],
-			    instruction.arm.pf_def.arm_frame[2][0],
-			    instruction.arm.pf_def.arm_frame[2][1],
-			    instruction.arm.pf_def.arm_frame[2][2]),
-								KDL::Vector(	instruction.arm.pf_def.arm_frame[0][3],
-								    instruction.arm.pf_def.arm_frame[1][3],
-								    instruction.arm.pf_def.arm_frame[2][3]));
+			KDL::Frame relFrame(KDL::Rotation(reply.arm.pf_def.arm_frame[0][0],
+					instruction.arm.pf_def.arm_frame[0][1],
+					instruction.arm.pf_def.arm_frame[0][2],
+					instruction.arm.pf_def.arm_frame[1][0],
+					instruction.arm.pf_def.arm_frame[1][1],
+					instruction.arm.pf_def.arm_frame[1][2],
+					instruction.arm.pf_def.arm_frame[2][0],
+					instruction.arm.pf_def.arm_frame[2][1],
+					instruction.arm.pf_def.arm_frame[2][2]), KDL::Vector(
+					instruction.arm.pf_def.arm_frame[0][3],
+					instruction.arm.pf_def.arm_frame[1][3],
+					instruction.arm.pf_def.arm_frame[2][3]));
 			Cartesian_Setpoint = Cartesian_Setpoint * relFrame;
 		}
 			break;
@@ -737,13 +717,73 @@ void ECP_proxy::move_arm(lib::c_buffer &instruction)
 		}
 		log(RTT::Error) << "EDP : Frame data send" << RTT::endlog();
 		Cartesian_Setpoint_port.Set(Cartesian_Setpoint);
-		log(RTT::Error) << "cart pos recieved :" << instruction.arm.pf_def.arm_frame[0][3] << instruction.arm.pf_def.arm_frame[1][3] << instruction.arm.pf_def.arm_frame[2][3] << RTT::endlog();
+		log(RTT::Error) << "cart pos recieved :"
+				<< instruction.arm.pf_def.arm_frame[0][3]
+				<< instruction.arm.pf_def.arm_frame[1][3]
+				<< instruction.arm.pf_def.arm_frame[2][3] << RTT::endlog();
 		break;
 	case lib::MOTOR:
 	default: // blad: niezdefiniowany sposb specyfikacji pozycji koncowki
-		log(RTT::Error) << "EDP : not implemented yet" << RTT::endlog();
+		log(RTT::Warning) << "not implemented yet" << RTT::endlog();
 	}
 
+}
+
+void ECP_proxy::setRModel(lib::c_buffer &instruction)
+{
+	switch (instruction.set_rmodel_type)
+	{
+	case lib::TOOL_FRAME:
+	{
+
+		KDL::Frame relFrame(KDL::Rotation(
+				instruction.rmodel.tool_frame_def.tool_frame[0][0],
+				instruction.rmodel.tool_frame_def.tool_frame[0][1],
+				instruction.rmodel.tool_frame_def.tool_frame[0][2],
+				instruction.rmodel.tool_frame_def.tool_frame[1][0],
+				instruction.rmodel.tool_frame_def.tool_frame[1][1],
+				instruction.rmodel.tool_frame_def.tool_frame[1][2],
+				instruction.rmodel.tool_frame_def.tool_frame[2][0],
+				instruction.rmodel.tool_frame_def.tool_frame[2][1],
+				instruction.rmodel.tool_frame_def.tool_frame[2][2]),
+				KDL::Vector(instruction.rmodel.tool_frame_def.tool_frame[0][3],
+						instruction.rmodel.tool_frame_def.tool_frame[1][3],
+						instruction.rmodel.tool_frame_def.tool_frame[2][3]));
+		toolFrame_ext_prop.set(relFrame);
+
+	}
+		break;
+	case lib::ARM_KINEMATIC_MODEL:
+	case lib::SERVO_ALGORITHM:
+	case lib::FORCE_TOOL:
+	case lib::FORCE_BIAS:
+	default:
+		log(RTT::Warning) << "not implemented yet" << RTT::endlog();
+		break;
+	}
+}
+
+void ECP_proxy::getRModel(lib::c_buffer &instruction)
+{
+	switch (instruction.get_rmodel_type)
+	{
+	case lib::TOOL_FRAME:
+	{
+		KDL::Frame toolFrame = toolFrame_ext_prop.get();
+		reply.rmodel_type = lib::TOOL_FRAME;
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 4; j++)
+				reply.rmodel.tool_frame_def.tool_frame[i][j] = toolFrame(i, j);
+	}
+		break;
+	case lib::ARM_KINEMATIC_MODEL:
+	case lib::SERVO_ALGORITHM:
+	case lib::FORCE_TOOL:
+	case lib::FORCE_BIAS:
+	default:
+		log(RTT::Warning) << "not implemented yet" << RTT::endlog();
+		break;
+	}
 }
 
 }

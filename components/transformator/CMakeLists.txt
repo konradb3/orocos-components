@@ -1,2 +1,5 @@
+OPTION( BUILD_transformator "Build transformator Component" ON )
 
-ADD_LIBRARY(transformator-${OROCOS_TARGET} SHARED transformator.cpp )
+if(BUILD_transformator)
+GLOBAL_ADD_COMPONENT(transformator transformator.cpp )
+endif( BUILD_transformator )

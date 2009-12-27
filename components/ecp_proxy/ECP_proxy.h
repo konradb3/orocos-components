@@ -64,6 +64,8 @@ private:
 	KDL::Frame Cartesian_Setpoint;
 	KDL::Frame Cartesian_Position;
 
+	RTT::Property<KDL::Frame> toolFrame_ext_prop;
+
 	int number_of_servos;
 
 	messip_channel_t *attach;
@@ -85,6 +87,8 @@ private:
 	void interpret_instruction (mrrocpp::lib::c_buffer &instruction);
 	void get_arm_position(mrrocpp::lib::c_buffer &instruction);
 	void move_arm(mrrocpp::lib::c_buffer &instruction);
+	void setRModel(mrrocpp::lib::c_buffer &instruction);
+	void getRModel(mrrocpp::lib::c_buffer &instruction);
 
 };
 

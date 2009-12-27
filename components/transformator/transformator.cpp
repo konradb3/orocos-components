@@ -20,21 +20,27 @@ namespace orocos_test
   using namespace KDL;
   transformator::transformator(std::string name) :
     TaskContext(name, PreOperational),
-        cartpos_setpoint_port("cartpos_setpoint"), cartpos_port("cartpos"),
-        position_port("Position_input"), Setpoint_port("Setpoint_output"),
+        cartesianSetpoint_port("CartesianSetpoint_input"),
+        cartesianPosition_port("CartesianPosition_output"),
+        jointPosition_port("JointPosition_input"),
+        jointSetpoint_port("JointSetpoint_output"),
         chain_prop("Chain", "Kinematic Description of the robot chain"),
-        qmin_prop("qmin", "Position lower limit for joints"), qmax_prop("qmax",
-            "Position upper limit for joints")
+        qmin_prop("qmin", "Position lower limit for joints"),
+        qmax_prop("qmax", "Position upper limit for joints"),
+        baseFrame_prop("BaseFrame", "Robot base position in global frame"),
+        toolFrame_prop("ToolFrame", "Tool position in effector frame")
 
   {
-    this->ports()->addEventPort(&cartpos_setpoint_port);
-    this->ports()->addPort(&cartpos_port);
-    this->ports()->addPort(&Setpoint_port);
-    this->ports()->addEventPort(&position_port);
+    this->ports()->addEventPort(&cartesianSetpoint_port);
+    this->ports()->addPort(&cartesianPosition_port);
+    this->ports()->addPort(&jointSetpoint_port);
+    this->ports()->addEventPort(&jointPosition_port);
 
     this->properties()->addProperty(&chain_prop);
     this->properties()->addProperty(&qmin_prop);
     this->properties()->addProperty(&qmax_prop);
+    this->properties()->addProperty(&baseFrame_prop);
+    this->properties()->addProperty(&toolFrame_prop);
 
   }
 
@@ -51,14 +57,16 @@ namespace orocos_test
     std::vector<double> _qmin;
     std::vector<double> _qmax;
 
+    baseFrame = baseFrame_prop.get();
+
     chain = chain_prop.get();
 
     nj = chain.getNrOfJoints();
-    jointpositions = new KDL::JntArray(nj);
-    jointsetpoints = new KDL::JntArray(nj);
+    jointPosition = new KDL::JntArray(nj);
+    jointSetpoint = new KDL::JntArray(nj);
     qmin = new KDL::JntArray(nj);
     qmax = new KDL::JntArray(nj);
-    joint_setpoint.resize(nj);
+    jointSetpoint_tmp.resize(nj);
 
     _qmin = qmin_prop.get();
     for (unsigned int i = 0; i < _qmin.size(); i++)
@@ -87,31 +95,35 @@ namespace orocos_test
       const std::vector<RTT::PortInterface*>& updatedPorts)
   {
 
-    bool cartpos_setpoint_update = false;
-    bool Position_input_update = false;
+    bool cartesianSetpoint_update = false;
+    bool positionInput_update = false;
+
+    toolFrame = toolFrame_prop.get();
 
     for (unsigned int i = 0; i < updatedPorts.size(); i++)
-      if (updatedPorts[i]->getName() == "cartpos_setpoint")
+      if (updatedPorts[i]->getName() == "CartesianSetpoint_input")
         {
-        cartpos_setpoint_update = true;
-        } else if (updatedPorts[i]->getName() == "Position_input")
+        cartesianSetpoint_update = true;
+        } else if (updatedPorts[i]->getName() == "JointPosition_input")
           {
-        Position_input_update = true;
+        positionInput_update = true;
           }
 
-    if (Position_input_update)
+    if (positionInput_update)
       {
-        position_port.Get(joint_position);
+        jointPosition_port.Get(jointPosition_tmp);
 
-        if ((nj == joint_position.size()))
+        if ((nj == jointPosition_tmp.size()))
           {
             for (unsigned int i = 0; i < nj; i++)
-              (*jointpositions)(i) = joint_position[i];
+              (*jointPosition)(i) = jointPosition_tmp[i];
             //Calculate forward position kinematics
-            kinematics_status = fksolver->JntToCart(*jointpositions, cartpos);
+            kinematics_status = fksolver->JntToCart(*jointPosition, cartesianPosition);
+            cartesianPosition = baseFrame * cartesianPosition;
+            cartesianPosition = cartesianPosition * toolFrame;
             //Only set result to port if it was calcuted correctly
             if (kinematics_status >= 0)
-              cartpos_port.Set(cartpos);
+              cartesianPosition_port.Set(cartesianPosition);
             else
               log(RTT::Error) << "Could not calculate forward kinematics"
                   << RTT::endlog();
@@ -119,25 +131,27 @@ namespace orocos_test
           }
       }
 
-    if (cartpos_setpoint_update)
+    if (cartesianSetpoint_update)
       {
 
-        cartpos_setpoint_port.Get(Setpoint);
+        cartesianSetpoint_port.Get(cartesianSetpoint);
+        cartesianSetpoint = baseFrame * cartesianSetpoint;
+        cartesianSetpoint = cartesianSetpoint * toolFrame.Inverse();
         //Calculate inverse position kinematics
-        kinematics_status = iksolver->CartToJnt(*jointpositions, Setpoint,
-            *jointsetpoints);
+        kinematics_status = iksolver->CartToJnt(*jointPosition, cartesianSetpoint,
+            *jointSetpoint);
 
         if (kinematics_status < 0)
           {
-            (*jointsetpoints) = (*jointpositions);
+            (*jointSetpoint) = (*jointPosition);
             log(RTT::Error) << "Could not calculate inverse kinematics"
                 << RTT::endlog();
           }
 
         for (unsigned int i = 0; i < nj; i++)
-          joint_setpoint[i] = (*jointsetpoints)(i);
+          jointSetpoint_tmp[i] = (*jointSetpoint)(i);
 
-        Setpoint_port.Set(joint_setpoint);
+        jointSetpoint_port.Set(jointSetpoint_tmp);
       }
 
   }

@@ -1,13 +1,5 @@
-#SET( MODEL "plant" )
+OPTION( BUILD_viz_zbik3d "Build viz_zbik3d Component" ON )
 
-#ADD_CUSTOM_COMMAND( OUTPUT RTW${MODEL}-${OROCOS_TARGET}
-#                    COMMAND make -C ${CMAKE_CURRENT_SOURCE_DIR}/${MODEL}_orocos -f ${MODEL}.mk OROPATH=${OROCOS_INSTALL} USER_INCLUDES="-I${PROJ_SOURCE_DIR}" CC="${CMAKE_C_COMPILER}" CXX="${CMAKE_CXX_COMPILER}" OPT_OPTS="-g"
-#                    COMMAND mv ${CMAKE_CURRENT_SOURCE_DIR}/RTW${MODEL}.so RTW${MODEL}-${OROCOS_TARGET}.so
-#                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${MODEL}_orocos/${MODEL}.mk)
-
-#ADD_CUSTOM_TARGET( clean make -C  ${CMAKE_CURRENT_SOURCE_DIR}/${MODEL}_orocos -f ${MODEL}.mk clean )
-#ADD_CUSTOM_TARGET( clean DEPENDS clean-${MODEL})
-
-#ADD_CUSTOM_TARGET( Create-${MODEL} ALL DEPENDS RTW${MODEL}-${OROCOS_TARGET} )
-
-ADD_LIBRARY(viz_zbik3d-${OROCOS_TARGET} SHARED viz_zbik3d.cpp )
+if(BUILD_viz_zbik3d)
+GLOBAL_ADD_COMPONENT(viz_zbik3d viz_zbik3d.cpp )
+endif(BUILD_viz_zbik3d)
