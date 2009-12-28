@@ -1,15 +1,13 @@
 #include <ocl/ComponentLoader.hpp>
 
-#include "edp_irp6p.hpp"
-
+#include "edp_irp6p.h"
 
 namespace orocos_test
 {
 edp_irp6p::edp_irp6p(std::string name) :
-	TaskContext(name),
-	positionSetpoint_port("Position_setpoint"),
-	positionCurrent_port("Current_position"),
-	number_of_axes("IRP6P_NUM_AXES", 6)
+	TaskContext(name), positionSetpoint_port("Position_setpoint"),
+			positionCurrent_port("Current_position"), number_of_axes(
+					"IRP6P_NUM_AXES", 6)
 {
 	this->ports()->addPort(&positionSetpoint_port);
 	this->ports()->addPort(&positionCurrent_port);
@@ -56,4 +54,5 @@ void edp_irp6p::cleanupHook()
 
 }
 }
-ORO_CREATE_COMPONENT( orocos_test::edp_irp6p );
+ORO_CREATE_COMPONENT( orocos_test::edp_irp6p )
+;

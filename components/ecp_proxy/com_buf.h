@@ -28,59 +28,60 @@
 
 #include <messip.h>
 
-
 #include <boost/serialization/serialization.hpp>
 
-
 #define MAX_SERVOS_NR 8
-enum STATE { GET_STATE, GET_SYNCHRO, SYNCHRO_TERMINATED, GET_INSTRUCTION, EXECUTE_INSTRUCTION, WAIT, WAIT_Q };
+enum STATE
+{
+	GET_STATE,
+	GET_SYNCHRO,
+	SYNCHRO_TERMINATED,
+	GET_INSTRUCTION,
+	EXECUTE_INSTRUCTION,
+	WAIT,
+	WAIT_Q
+};
 
-namespace mrrocpp {
+namespace mrrocpp
+{
 
-namespace lib {
+namespace lib
+{
 
 typedef double frame_tab[3][4];
 //------------------------------------------------------------------------------
 /*!
  *  Type of command sent from MP to ECP.
  */
-enum MP_COMMAND {
-	INVALID_COMMAND,
-	START_TASK,
-	NEXT_POSE,
-	END_MOTION,
-	NEXT_STATE,
-	STOP
+enum MP_COMMAND
+{
+	INVALID_COMMAND, START_TASK, NEXT_POSE, END_MOTION, NEXT_STATE, STOP
 };
 
 //------------------------------------------------------------------------------
 /*!
  *  Type of reply from ECP to the MP command.
  */
-enum ECP_REPLY {
-	INCORRECT_MP_COMMAND,
-	ERROR_IN_ECP,
-	ECP_ACKNOWLEDGE,
-	TASK_TERMINATED
+enum ECP_REPLY
+{
+	INCORRECT_MP_COMMAND, ERROR_IN_ECP, ECP_ACKNOWLEDGE, TASK_TERMINATED
 };
 
 //------------------------------------------------------------------------------
 /*!
  *  Type of arm position definition.
  */
-enum POSE_SPECIFICATION {
-	INVALID_END_EFFECTOR,
-	FRAME,
-	JOINT,
-	MOTOR,
-	PF_VELOCITY
+enum POSE_SPECIFICATION
+{
+	INVALID_END_EFFECTOR, FRAME, JOINT, MOTOR, PF_VELOCITY
 };
 
 //------------------------------------------------------------------------------
 /*!
  *  Type of arm position definition on the ECP level.
  */
-enum ECP_POSE_SPECIFICATION {
+enum ECP_POSE_SPECIFICATION
+{
 	ECP_INVALID_END_EFFECTOR,
 	ECP_XYZ_ANGLE_AXIS,
 	ECP_XYZ_EULER_ZYZ,
@@ -92,7 +93,8 @@ enum ECP_POSE_SPECIFICATION {
 /*!
  *  Reply types from UI to ECP and commands from UI (pressing a button).
  */
-enum UI_TO_ECP_COMMAND {
+enum UI_TO_ECP_COMMAND
+{
 	INVALID_REPLY,
 	NEXT,
 	QUIT,
@@ -145,7 +147,8 @@ enum UI_TO_ECP_COMMAND {
 /*!
  *  Types of ECP to UI commands.
  */
-enum ECP_TO_UI_COMMAND {
+enum ECP_TO_UI_COMMAND
+{
 	C_INVALID_END_EFFECTOR,
 	C_FRAME,
 	C_XYZ_ANGLE_AXIS,
@@ -171,13 +174,9 @@ enum ECP_TO_UI_COMMAND {
 /*!
  *  Types of processes in MRROC++.
  */
-typedef enum _PROCESS_TYPE {
-	UNKNOWN_PROCESS_TYPE,
-	EDP,
-	ECP,
-	MP,
-	VSP,
-	UI
+typedef enum _PROCESS_TYPE
+{
+	UNKNOWN_PROCESS_TYPE, EDP, ECP, MP, VSP, UI
 } process_type_t;
 
 //------------------------------------------------------------------------------
@@ -272,7 +271,6 @@ typedef enum _PROCESS_TYPE {
 #define INVALID_KINEMATIC_CORRECTOR_NO          0x5600000000000000ULL
 #define EDP_UNIDENTIFIED_ERROR                  0x5700000000000000ULL
 
-
 #define NOT_A_NUMBER_JOINT_VALUE_D0             0x6000000000000000ULL
 #define NOT_A_NUMBER_JOINT_VALUE_THETA1         0x6100000000000000ULL
 #define NOT_A_NUMBER_JOINT_VALUE_THETA2         0x6200000000000000ULL
@@ -298,11 +296,9 @@ typedef enum _PROCESS_TYPE {
 
 //------------------------------------------------------------------------------
 /*! Error classes. */
-typedef enum _ERROR_CLASS {
-	NEW_MESSAGE,
-	SYSTEM_ERROR,
-	FATAL_ERROR,
-	NON_FATAL_ERROR
+typedef enum _ERROR_CLASS
+{
+	NEW_MESSAGE, SYSTEM_ERROR, FATAL_ERROR, NON_FATAL_ERROR
 } error_class_t;
 
 //------------------------------------------------------------------------------
@@ -380,7 +376,8 @@ typedef enum _ERROR_CLASS {
 #define RCS_EXCEPTION                           0x11ULL
 
 //------------------------------------------------------------------------------
-enum GRIPPER_STATE_ENUM {
+enum GRIPPER_STATE_ENUM
+{
 	GRIPPER_START_STATE,
 	GRIPPER_EXPAND_STATE,
 	GRIPPER_NARROW_STATE,
@@ -390,17 +387,14 @@ enum GRIPPER_STATE_ENUM {
 };
 
 //------------------------------------------------------------------------------
-enum INSTRUCTION_TYPE {
-	INVALID,
-	SET,
-	GET,
-	SET_GET,
-	SYNCHRO,
-	QUERY
+enum INSTRUCTION_TYPE
+{
+	INVALID, SET, GET, SET_GET, SYNCHRO, QUERY
 };
 
 //------------------------------------------------------------------------------
-enum RMODEL_SPECIFICATION {
+enum RMODEL_SPECIFICATION
+{
 	INVALID_RMODEL,
 	TOOL_FRAME,
 	ARM_KINEMATIC_MODEL,
@@ -410,7 +404,8 @@ enum RMODEL_SPECIFICATION {
 };
 
 //------------------------------------------------------------------------------
-enum MOTION_TYPE {
+enum MOTION_TYPE
+{
 	ABSOLUTE, RELATIVE
 };
 
@@ -422,7 +417,8 @@ enum INTERPOLATION_TYPE
 };
 
 //------------------------------------------------------------------------------
-enum REPLY_TYPE {
+enum REPLY_TYPE
+{
 	ERROR,
 	ACKNOWLEDGE,
 	SYNCHRO_OK,
@@ -436,26 +432,25 @@ enum REPLY_TYPE {
 	CONTROLLER_STATE
 /*
  * TODO: would not be it easier to handle with the following?
-	ERROR = 0,
-	ACKNOWLEDGE = 0x01,
-	SYNCHRO_OK = 0x02,
-	ARM = 0x04,
-	RMODEL = 0x08,
-	INPUTS = 0x10,
-	ARM_RMODEL = 0x20,
-	ARM_INPUTS = 0x40,
-	RMODEL_INPUTS = 0x80,
-	ARM_RMODEL_INPUTS = 0x100,
-	CONTROLLER_STATE = 0x200
+ ERROR = 0,
+ ACKNOWLEDGE = 0x01,
+ SYNCHRO_OK = 0x02,
+ ARM = 0x04,
+ RMODEL = 0x08,
+ INPUTS = 0x10,
+ ARM_RMODEL = 0x20,
+ ARM_INPUTS = 0x40,
+ RMODEL_INPUTS = 0x80,
+ ARM_RMODEL_INPUTS = 0x100,
+ CONTROLLER_STATE = 0x200
  */
 };
 
 //------------------------------------------------------------------------------
 /*! @todo Rename from "behavior". */
-enum BEHAVIOUR_SPECIFICATION {
-	UNGUARDED_MOTION,
-	GUARDED_MOTION,
-	CONTACT
+enum BEHAVIOUR_SPECIFICATION
+{
+	UNGUARDED_MOTION, GUARDED_MOTION, CONTACT
 };
 
 //------------------------------------------------------------------------------
@@ -467,11 +462,9 @@ struct edp_error
 };
 
 //------------------------------------------------------------------------------
-enum SERVO_COMMAND {
-	MOVE,
-	READ,
-	SYNCHRONISE,
-	SERVO_ALGORITHM_AND_PARAMETERS
+enum SERVO_COMMAND
+{
+	MOVE, READ, SYNCHRONISE, SERVO_ALGORITHM_AND_PARAMETERS
 };
 
 //------------------------------------------------------------------------------
@@ -488,15 +481,13 @@ typedef union c_buffer_rmodel
 	{
 		/*! Tool trihedron ralative to the collar. */
 		frame_tab tool_frame;
-	}
-	tool_frame_def;
+	} tool_frame_def;
 	//----------------------------------------------------------
 	struct
 	{
 		/*! Parameter set number for the kinematic model. */
 		uint8_t kinematic_model_no;
-	}
-	kinematic_model;
+	} kinematic_model;
 	//----------------------------------------------------------
 	struct
 	{
@@ -504,18 +495,15 @@ typedef union c_buffer_rmodel
 		uint8_t servo_algorithm_no[MAX_SERVOS_NR];
 		/*! Parameter set numbers for the servo-regulation algorithms. */
 		uint8_t servo_parameters_no[MAX_SERVOS_NR];
-	}
-	servo_algorithm;
+	} servo_algorithm;
 	//----------------------------------------------------------
 	struct
 	{
 		double position[3];
 		double weight;
-	}
-	force_tool;
+	} force_tool;
 
 } c_buffer_rmodel_t;
-
 
 //------------------------------------------------------------------------------
 /*! arm */
@@ -525,8 +513,7 @@ typedef union c_buffer_arm
 	{
 		/*! A get_state command variant. */
 		int command;
-	}
-	get_state_def;
+	} get_state_def;
 	//----------------------------------------------------------
 	struct
 	{
@@ -536,17 +523,14 @@ typedef union c_buffer_arm
 		double arm_coordinates[MAX_SERVOS_NR];
 		/*! Given torque. */
 		double desired_torque[MAX_SERVOS_NR];
-		double inertia[6],
-		reciprocal_damping[6];
+		double inertia[6], reciprocal_damping[6];
 		double force_xyz_torque_xyz[6];
 		BEHAVIOUR_SPECIFICATION behaviour[6];
 		/*! Dilation degree of the gripper. */
 		double gripper_coordinate;
-	}
-	pf_def;
+	} pf_def;
 
 } c_buffer_arm_t;
-
 
 //------------------------------------------------------------------------------
 struct c_buffer
@@ -601,25 +585,25 @@ struct c_buffer
 	uint16_t value_in_step_no;
 	c_buffer_rmodel_t rmodel;
 	c_buffer_arm_t arm;
-/*
-	friend class boost::serialization::access;
+	/*
+	 friend class boost::serialization::access;
 
-	template<class Archive>
-		void serialize(Archive & ar, const unsigned int version)
-		{
-			ar & instruction_type;
-			ar & set_type;
-			ar & get_type;
-			ar & set_rmodel_type;
-			ar & get_rmodel_type;
-			ar & set_arm_type;
-			ar & get_arm_type;
-			ar & output_values;
-			ar & interpolation_type;
-			ar & motion_type;
-			ar & motion_steps;
-		}
-*/
+	 template<class Archive>
+	 void serialize(Archive & ar, const unsigned int version)
+	 {
+	 ar & instruction_type;
+	 ar & set_type;
+	 ar & get_type;
+	 ar & set_rmodel_type;
+	 ar & get_rmodel_type;
+	 ar & set_arm_type;
+	 ar & get_arm_type;
+	 ar & output_values;
+	 ar & interpolation_type;
+	 ar & motion_type;
+	 ar & motion_steps;
+	 }
+	 */
 };
 
 //------------------------------------------------------------------------------
@@ -641,8 +625,7 @@ typedef union r_buffer_rmodel
 		frame_tab tool_frame;
 		//*! Byte for calculating the command's length. */
 		// 	uint8_t address_byte;
-	}
-	tool_frame_def;
+	} tool_frame_def;
 	//----------------------------------------------------------
 	struct
 	{
@@ -654,8 +637,7 @@ typedef union r_buffer_rmodel
 
 		//*! Byte for calculating the command's length. */
 		// 	uint8_t address_byte;
-	}
-	kinematic_model;
+	} kinematic_model;
 	//----------------------------------------------------------
 	struct
 	{
@@ -669,18 +651,15 @@ typedef union r_buffer_rmodel
 		 *  @todo Translate to English.
 		 */
 		uint8_t servo_parameters_no[MAX_SERVOS_NR];
-	}
-	servo_algorithm;
+	} servo_algorithm;
 	//----------------------------------------------------------
 	struct
 	{
 		double position[3];
 		double weight;
-	}
-	force_tool;
+	} force_tool;
 
 } r_buffer_rmodel_t;
-
 
 //------------------------------------------------------------------------------
 typedef struct _controller_state_t
@@ -739,8 +718,7 @@ typedef union r_buffer_arm
 		//*! Byte for calculating the command's length. */
 		// 	uint8_t address_byte;
 
-	}
-	pf_def;
+	} pf_def;
 	//----------------------------------------------------------
 	struct
 	{
@@ -751,8 +729,7 @@ typedef union r_buffer_arm
 		int speaking;
 		//*! Byte for calculating the command's length. */
 		// 	uint8_t address_byte;
-	}
-	text_def;
+	} text_def;
 
 } r_buffer_arm_t;
 
@@ -796,13 +773,12 @@ struct r_buffer
 	//                      METHODS
 	//-----------------------------------------------------
 	//r_buffer (void); // W odkomentowane
-} __attribute__((__packed__));
-
+}__attribute__((__packed__));
 
 struct ecp_command_buffer
 {
 	/*! This is a message buffer, so it needs a message header */
-//	msg_header_t hdr;
+	//	msg_header_t hdr;
 	c_buffer instruction;
 };
 

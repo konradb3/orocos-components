@@ -1,19 +1,16 @@
 
-#include "viz_zbik3d.hpp"
-
-#include <vector>
-
 #include <ocl/ComponentLoader.hpp>
+
+#include "viz_zbik3d.h"
 
 namespace orocos_test
 {
 
 viz_zbik3d::viz_zbik3d(std::string name) :
-	TaskContext(name, PreOperational),
-	input_port("Position_input"),
-	port_prop("port", "Port used to comunicate with zbik3D")
+	TaskContext(name, PreOperational), input_port("Position_input"), port_prop(
+			"port", "Port used to comunicate with zbik3D")
 {
-	this->ports()->addPort(&input_port);
+	this->ports()->addPort(&joint_port);
 
 	this->properties()->addProperty(&port_prop);
 }
@@ -54,7 +51,7 @@ void viz_zbik3d::updateHook()
 	numbytes = recvfrom(sockfd, buf, MAXBUFLEN - 1, 0,
 			(struct sockaddr *) &their_addr, &addr_len);
 	reply.synchronised = 1;
-	data = input_port.Get();
+	data = joint_port.Get();
 	if (data.size() == 7)
 	{
 		reply.joints[0] = data[0];
@@ -93,5 +90,6 @@ void viz_zbik3d::cleanupHook()
 
 }
 
-ORO_CREATE_COMPONENT( orocos_test::viz_zbik3d );
+ORO_CREATE_COMPONENT( orocos_test::viz_zbik3d )
+;
 

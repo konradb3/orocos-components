@@ -54,8 +54,8 @@ public:
 protected:
 	RTT::DataPort<std::vector<double> > Joint_Setpoint_port;
 	RTT::DataPort<std::vector<double> > Joint_Position_port;
-	RTT::DataPort<KDL::Frame > Cartesian_Setpoint_port;
-	RTT::DataPort<KDL::Frame > Cartesian_Position_port;
+	RTT::DataPort<KDL::Frame> Cartesian_Setpoint_port;
+	RTT::DataPort<KDL::Frame> Cartesian_Position_port;
 
 private:
 	std::vector<double> Joint_Setpoint;
@@ -71,20 +71,21 @@ private:
 	messip_channel_t *attach;
 	int caller;
 
-	STATE next_state;    // stan nastepny, do ktorego przejdzie EDP_MASTER
+	STATE next_state; // stan nastepny, do ktorego przejdzie EDP_MASTER
 	int state;
 	mrrocpp::lib::REPLY_TYPE real_reply_type;
 
 	mrrocpp::lib::r_buffer reply;
 
-    mrrocpp::lib::ecp_command_buffer new_ecp_command;
-    mrrocpp::lib::c_buffer new_instruction, current_instruction;
+	mrrocpp::lib::ecp_command_buffer new_ecp_command;
+	mrrocpp::lib::c_buffer new_instruction, current_instruction;
 
 	mrrocpp::lib::INSTRUCTION_TYPE receive_instruction(void);
 	void reply_to_instruction(void);
 	void insert_reply_type(mrrocpp::lib::REPLY_TYPE rt);
-	mrrocpp::lib::REPLY_TYPE rep_type (const mrrocpp::lib::c_buffer &instruction);
-	void interpret_instruction (mrrocpp::lib::c_buffer &instruction);
+	mrrocpp::lib::REPLY_TYPE
+			rep_type(const mrrocpp::lib::c_buffer &instruction);
+	void interpret_instruction(mrrocpp::lib::c_buffer &instruction);
 	void get_arm_position(mrrocpp::lib::c_buffer &instruction);
 	void move_arm(mrrocpp::lib::c_buffer &instruction);
 	void setRModel(mrrocpp::lib::c_buffer &instruction);

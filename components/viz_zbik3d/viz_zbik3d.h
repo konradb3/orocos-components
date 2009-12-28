@@ -53,7 +53,7 @@ public:
 
 protected:
 
-	RTT::DataPort<std::vector<double> > input_port;
+	RTT::DataPort<std::vector<double> > joint_port;
 	RTT::Property<int> port_prop;
 private:
 	int sockfd;

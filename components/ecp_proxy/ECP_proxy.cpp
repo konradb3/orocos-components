@@ -34,7 +34,7 @@ ECP_proxy::ECP_proxy(std::string name) :
 
 ECP_proxy::~ECP_proxy()
 {
-	// TODO Auto-generated destructor stub
+
 }
 
 bool ECP_proxy::configureHook()
