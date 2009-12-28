@@ -7,7 +7,7 @@ namespace orocos_test
 {
 
 viz_zbik3d::viz_zbik3d(std::string name) :
-	TaskContext(name, PreOperational), input_port("Position_input"), port_prop(
+	TaskContext(name, PreOperational), joint_port("Position_input"), port_prop(
 			"port", "Port used to comunicate with zbik3D")
 {
 	this->ports()->addPort(&joint_port);

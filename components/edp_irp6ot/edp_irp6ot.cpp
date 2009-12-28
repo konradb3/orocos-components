@@ -1,6 +1,6 @@
 #include <ocl/ComponentLoader.hpp>
 
-#include "edp_irp6ot.hpp"
+#include "edp_irp6ot.h"
 
 namespace orocos_test
 {
