@@ -35,7 +35,7 @@ bool Protonek_position::startHook()
 {
 	if(protonek.connect(port_name.c_str(), 9600) == false)
 	{
-		log(RTT::Fatal) << "Unable to connect to protonek driver" << RTT::endlog();
+		log(RTT::Fatal) << "Unable to connect to protonek driver : " << port_name << RTT::endlog();
 		return false;
 	}
 

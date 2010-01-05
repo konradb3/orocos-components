@@ -77,7 +77,7 @@ bool Protonek::connect(const char* port, int baud)
 	newtio.c_iflag = INPCK; //IGNPAR;
 	newtio.c_oflag = 0;
 	newtio.c_lflag = 0;
-	if (cfsetispeed(&newtio, baud) < 0 || cfsetospeed(&newtio, baud) < 0)
+	if (cfsetispeed(&newtio, B9600) < 0 || cfsetospeed(&newtio, B9600) < 0)
 	{
 		fprintf(stderr, "Failed to set serial baud rate: %d\n", baud);
 		tcsetattr(fd, TCSANOW, &oldtio);

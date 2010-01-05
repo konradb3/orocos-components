@@ -78,7 +78,7 @@ public:
 
 	double m_per_tick;
 	double robot_axle_length;
-	double enc_ticks;
+	int enc_ticks;
 
 private:
 	// serial port descriptor
