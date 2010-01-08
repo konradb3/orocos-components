@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+
+  <!-- Structure of this file:
+
+     |-  Component 1
+     |     |- Property file
+     |     |- Activity info
+     |     |- Peer connections
+     |     |- Port connections
+     |     \- Scripts to load
+     |
+     |-  Component 2
+     |     |- Property file
+     |     |- Activity info
+     |     |- Peer connections
+     |     |- Port connections
+     |     \- Scripts to load
+     ...
+  -->
+
+  <simple name="Import" type="string"><value>/usr/local/lib/liborocos-reporting</value></simple>
+  <simple name="Import" type="string"><value>/usr/local/lib/liborocos-timer</value></simple>
+
+  <simple name="Import" type="string"><value>/usr/local/lib/rtt/gnulinux/plugins/liborocos-kdltk-gnulinux</value></simple>
+
+  <simple name="Import" type="string"><value>components/protonek_position</value></simple>
+   <simple name="Import" type="string"><value>components/Laser_tilt</value></simple>
+<!-- EDP's -->
+
+  <struct name="Laser_tilt" type="orocos_test::Laser_tilt">
+    	<struct name="Activity" type="PeriodicActivity">
+      		<simple name="Period" type="double"><value>0.01</value></simple>
+      		<simple name="Priority" type="short"><value>0</value></simple>
+    		<simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
+    	</struct>
+    	<simple name="AutoStart" type="boolean"><value>0</value></simple>
+    	
+    	<struct name="Properties" type="PropertyBag">
+      		<simple name="Device" type="string"><value>/dev/ttyS0</value></simple>
+    	</struct>
+    	
+  </struct>
+
+
+</properties>

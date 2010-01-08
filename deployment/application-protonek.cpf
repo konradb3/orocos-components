@@ -22,7 +22,6 @@
 
   <simple name="Import" type="string"><value>/usr/local/lib/liborocos-reporting</value></simple>
   <simple name="Import" type="string"><value>/usr/local/lib/liborocos-timer</value></simple>
-  <simple name="Import" type="string"><value>/usr/local/lib/liborocos-cartesian</value></simple>
 
   <simple name="Import" type="string"><value>/usr/local/lib/rtt/gnulinux/plugins/liborocos-kdltk-gnulinux</value></simple>
 
