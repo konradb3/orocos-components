@@ -1,26 +1,31 @@
 /*
- * Laser_tilt.h
+ * Vis_peekabot.h
  *
- *  Created on: Jan 8, 2010
- *      Author: konradb3
+ *  Created on: Jan 9, 2010
+ *      Author: konrad
  */
 
-#ifndef LASER_TILT_H_
-#define LASER_TILT_H_
+#ifndef VIS_PEEKABOT_H_
+#define VIS_PEEKABOT_H_
+
+#include <vector>
+
+#include <kdl/frames.hpp>
 
 #include <rtt/RTT.hpp>
 #include <rtt/TaskContext.hpp>
 #include <rtt/Ports.hpp>
 #include <rtt/Properties.hpp>
 
-#include "ourptz.h"
+#include <peekabot.hh>
 
 namespace orocos_test
 {
-class Laser_tilt: public RTT::TaskContext
+
+class Vis_peekabot : public RTT::TaskContext
 {
 public:
-	Laser_tilt(std::string name);
+	Vis_peekabot(std::string name);
 	/**
 	 * This function is for the configuration code.
 	 * Return false to abort configuration.
@@ -47,15 +52,14 @@ public:
 	 * This function is called when the task is being deconfigured.
 	 */
 	void cleanupHook();
-
 protected:
-	RTT::DataPort<double> setpoint_port;
-	RTT::DataPort<double> position_port;
-	RTT::Property<std::string> port_prop;
+	RTT::DataPort<std::vector<KDL::Vector> > cloud_port;
 private:
-	Ourptz *ptz;
+	std::vector<KDL::Vector> cloud;
+	peekabot::PeekabotClient client;
+	peekabot::PointCloudProxy cloud_proxy;
 };
 
 }
 
-#endif /* LASER_TILT_H_ */
+#endif /* VIS_PEEKABOT_H_ */
