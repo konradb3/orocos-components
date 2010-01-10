@@ -12,6 +12,7 @@
 #include <rtt/TaskContext.hpp>
 #include <rtt/Ports.hpp>
 #include <rtt/Properties.hpp>
+#include <rtt/Command.hpp>
 
 #include "ourptz.h"
 
@@ -49,11 +50,16 @@ public:
 	void cleanupHook();
 
 protected:
-	RTT::DataPort<double> setpoint_port;
 	RTT::DataPort<double> position_port;
+	RTT::Command<bool(double)> move;
 	RTT::Property<std::string> port_prop;
 private:
 	Ourptz *ptz;
+	double target;
+	double position;
+
+	bool move_impl(double d);
+	bool atpos_impl(double d);
 };
 
 }

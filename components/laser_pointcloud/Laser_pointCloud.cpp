@@ -47,7 +47,6 @@ void Laser_pointCloud::updateHook()
 		cloud[i].x( distances[i] * sin(angles[i]));
 		cloud[i].z( distances[i] * cos(angles[i]) * sin(tilt));
 		cloud[i].y( distances[i] * cos(angles[i]) * cos(tilt));
-		angle+=3.14/100;
 	}
 	cloud_port.Set(cloud);
 }

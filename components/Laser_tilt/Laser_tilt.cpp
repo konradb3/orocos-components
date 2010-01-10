@@ -14,12 +14,13 @@ namespace orocos_test
 
   Laser_tilt::Laser_tilt(std::string name) :
     TaskContext(name),
-    setpoint_port("Setpoint_input"),
     position_port("Position_output"),
+    move("move",&Laser_tilt::move_impl, &Laser_tilt::atpos_impl, this),
     port_prop("Device", "UNIX device file (/dev/ttySx)")
   {
-    this->ports()->addPort(&setpoint_port);
     this->ports()->addPort(&position_port);
+
+    this->commands()->addCommand(&move, "Set angle", "d", "Target angle");
 
     this->properties()->addProperty(&port_prop);
   }
@@ -42,9 +43,6 @@ namespace orocos_test
 
   void Laser_tilt::updateHook()
   {
-    double setpoint, position;
-    setpoint = setpoint_port.Get();
-    ptz->SetPos(setpoint ,false);
     position = ptz->GetPos();
     position_port.Set(position);
   }
@@ -57,6 +55,18 @@ namespace orocos_test
   void Laser_tilt::cleanupHook()
   {
 
+  }
+
+  bool Laser_tilt::move_impl(double d)
+  {
+	  target = d;
+	  ptz->SetPos(target ,false);
+	  return true;
+  }
+
+  bool Laser_tilt::atpos_impl(double d)
+  {
+	  return (position == target);
   }
 }
 
