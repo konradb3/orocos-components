@@ -22,14 +22,29 @@
 
   <simple name="Import" type="string"><value>/usr/local/lib/liborocos-reporting</value></simple>
   <simple name="Import" type="string"><value>/usr/local/lib/liborocos-timer</value></simple>
-
+  <simple name="Import" type="string"><value>/usr/local/lib/liborocos-laserscanner</value></simple>
   <simple name="Import" type="string"><value>/usr/local/lib/rtt/gnulinux/plugins/liborocos-kdltk-gnulinux</value></simple>
 
   <simple name="Import" type="string"><value>components/protonek_position</value></simple>
-   <simple name="Import" type="string"><value>components/Laser_tilt</value></simple>
-      <simple name="Import" type="string"><value>components/laser_pointcloud</value></simple>
-         <simple name="Import" type="string"><value>components/vis_peekabot</value></simple>
-<!-- EDP's -->
+  <simple name="Import" type="string"><value>components/Laser_tilt</value></simple>
+  <simple name="Import" type="string"><value>components/laser_pointcloud</value></simple>
+  <simple name="Import" type="string"><value>components/vis_peekabot</value></simple>
+  
+  <struct name="LaserScanner" type="OCL::LaserScanner">
+    <struct name="Activity" type="NonPeriodicActivity">
+      <simple name="Priority" type="short"><value>0</value></simple>
+      <simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
+    </struct>
+
+    <simple name="AutoConf" type="boolean"><value>1</value></simple>
+    <simple name="AutoStart" type="boolean"><value>1</value></simple>
+    <simple name="UpdateProperties" type="string"><value>deployment/LaserScanner.cpf</value></simple>
+    
+    <struct name="Ports" type="PropertyBag">
+    	<simple name="LaserDistance" type="string"><value>laserranges </value></simple>
+		<simple name="LaserAngle" type="string"><value>laserangles </value></simple>
+    </struct>
+  </struct>
 
   <struct name="Laser_tilt" type="orocos_test::Laser_tilt">
     	<struct name="Activity" type="PeriodicActivity">
@@ -37,22 +52,29 @@
       		<simple name="Priority" type="short"><value>0</value></simple>
     		<simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
     	</struct>
-    	<simple name="AutoStart" type="boolean"><value>0</value></simple>
+    	<simple name="AutoStart" type="boolean"><value>1</value></simple>
 
     	<struct name="Properties" type="PropertyBag">
       		<simple name="Device" type="string"><value>/dev/ttyS0</value></simple>
+    	</struct>
+    	
+    	<struct name="Ports" type="PropertyBag">
+      		<simple name="Position_output" type="string"><value>tilt </value></simple>
     	</struct>
 
   </struct>
 
   <struct name="pointcloud" type="orocos_test::Laser_pointCloud">
-    	<struct name="Activity" type="PeriodicActivity">
-      		<simple name="Period" type="double"><value>0.2</value></simple>
+    	<struct name="Activity" type="NonPeriodicActivity">
+      		<!--<simple name="Period" type="double"><value>0.2</value></simple> -->
       		<simple name="Priority" type="short"><value>0</value></simple>
     		<simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
     	</struct>
     	<simple name="AutoStart" type="boolean"><value>0</value></simple>
 		<struct name="Ports" type="PropertyBag">
+			<simple name="Laser_distances_input" type="string"><value>laserranges </value></simple>
+			<simple name="Laser_angles_input" type="string"><value>laserangles </value></simple>
+			<simple name="Tilt_angle_input" type="string"><value>tilt </value></simple>
       		<simple name="Point_Cloud_output" type="string"><value>cloud </value></simple>
     	</struct>
   </struct>
@@ -63,7 +85,7 @@
       		<simple name="Priority" type="short"><value>0</value></simple>
     		<simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
     	</struct>
-    	<simple name="AutoStart" type="boolean"><value>0</value></simple>
+    	<simple name="AutoStart" type="boolean"><value>1</value></simple>
 
     	<struct name="Ports" type="PropertyBag">
       		<simple name="Point_Cloud_input" type="string"><value>cloud </value></simple>

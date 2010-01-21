@@ -44,9 +44,16 @@ void Laser_pointCloud::updateHook()
 
 	for (unsigned int i = 0; i<distances.size(); i++)
 	{
-		cloud[i].x( distances[i] * sin(angles[i]));
-		cloud[i].z( distances[i] * cos(angles[i]) * sin(tilt));
-		cloud[i].y( distances[i] * cos(angles[i]) * cos(tilt));
+	       // cloud[i] = KDL::Rotation::RotZ(angles[i]) *(KDL::Rotation::RotY(tilt) *  KDL::Vector(0.0,distances[i],0.0))  ;
+	//  float X = distance * cos (angle_x) * sin (angle_y);
+	 //                             float Y = distance * cos (angle_x) * cos (angle_y);
+	 //                             float Z = distance * sin (angle_x);
+
+
+		cloud[i].z( distances[i] * cos(angles[i] - 1.57) * sin(tilt));
+		cloud[i].x( distances[i] * cos(angles[i] - 1.57) * cos(tilt));
+		cloud[i].y( distances[i] * sin(angles[i] - 1.57));
+
 	}
 	cloud_port.Set(cloud);
 }

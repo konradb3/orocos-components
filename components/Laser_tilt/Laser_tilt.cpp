@@ -66,7 +66,7 @@ namespace orocos_test
 
   bool Laser_tilt::atpos_impl(double d)
   {
-	  return (position == target);
+	  return (fabs(target - position) < 0.001);
   }
 }
 

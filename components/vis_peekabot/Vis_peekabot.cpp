@@ -25,7 +25,7 @@ bool Vis_peekabot::configureHook()
 
 bool Vis_peekabot::startHook()
 {
-	client.connect("localhost");
+	client.connect("192.168.18.108");
 	cloud_proxy.add(client, "root.cloud", peekabot::REPLACE_ON_CONFLICT);
 	return true;
 }

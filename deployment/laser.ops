@@ -1,0 +1,7 @@
+program scan {
+
+while (true) {
+do move(-0.1)
+do move(1.47)
+}
+}
