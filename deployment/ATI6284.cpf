@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+  <simple name="Net_Device" type="string"><description>UNIX network device name to use</description><value>eth0</value></simple>
+  <simple name="Timeout" type="ulong"><description>Communication timeout in us</description><value>500</value></simple>
+  <struct name="Conversion_Matrix" type="array">
+     <description>Matrix used to convert tensometer readings into force and torque</description>
+     
+     <simple type="double"><value>-0.40709</value></simple>
+     <simple type="double"><value>0.35472</value></simple>
+     <simple type="double"><value>18.72635</value></simple>
+     <simple type="double"><value>-0.40836</value></simple>
+     <simple type="double"><value>37.13715</value></simple>
+     <simple type="double"><value>-0.15775</value></simple>
+     
+     <simple type="double"><value>-0.27318</value></simple>
+     <simple type="double"><value>38.22730</value></simple>
+     <simple type="double"><value>-0.59676</value></simple>
+     <simple type="double"><value>-0.95908</value></simple>
+     <simple type="double"><value>-1.02875</value></simple>
+     <simple type="double"><value>-18.16831</value></simple>
+     
+     <simple type="double"><value>0.34868</value></simple>     
+     <simple type="double"><value>-0.41173</value></simple>
+     <simple type="double"><value>19.27843</value></simple>
+     <simple type="double"><value>-33.37957</value></simple>
+     <simple type="double"><value>-20.00474</value></simple>
+     <simple type="double"><value>-0.00133</value></simple>
+     
+     <simple type="double"><value>-33.58156</value></simple>
+     <simple type="double"><value>-19.49156</value></simple>
+     <simple type="double"><value>-0.56931</value></simple>
+     <simple type="double"><value>1.38537</value></simple>
+     <simple type="double"><value>-0.27959</value></simple>
+     <simple type="double"><value>-18.78961</value></simple>
+     
+     <simple type="double"><value>-0.32609</value></simple>
+     <simple type="double"><value>0.49550</value></simple>
+     <simple type="double"><value>18.69352</value></simple>
+     <simple type="double"><value>32.52522</value></simple>
+     <simple type="double"><value>-19.34135</value></simple>
+     <simple type="double"><value>-0.31895</value></simple>
+     
+     <simple type="double"><value>33.54162</value></simple>
+     <simple type="double"><value>-19.15271</value></simple>
+     <simple type="double"><value>-0.67633</value></simple>
+     <simple type="double"><value>-0.51156</value></simple>
+     <simple type="double"><value>1.42577</value></simple>
+     <simple type="double"><value>-18.38586</value></simple>
+  </struct>
+  <struct name="Scale" type="array">
+     <description>Scaling vector, set proper force and torque scale</description>
+     <simple type="double"><value>4.5511972116989</value></simple>
+     <simple type="double"><value>4.5511972116989</value></simple>
+     <simple type="double"><value>1.41244051397552</value></simple>
+     <simple type="double"><value>84.8843245576086</value></simple>
+     <simple type="double"><value>84.8843245576086</value></simple>
+     <simple type="double"><value>80.9472037525247</value></simple>
+  </struct>
+  <simple name="Addr" type="string"><description>MAC adress of sensor board</description><value>00:0d:56:3b:f6:0a</value></simple>
+</properties>

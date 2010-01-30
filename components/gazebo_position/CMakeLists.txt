@@ -1,4 +1,4 @@
-OPTION( BUILD_Gazebo_position "Build Gazebo_position component" ON )
+OPTION( BUILD_Gazebo_position "Build Gazebo_position component" OFF )
 
 if(BUILD_Gazebo_position)
 GLOBAL_ADD_COMPONENT(Gazebo_position Gazebo_position.cpp )

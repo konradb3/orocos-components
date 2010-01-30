@@ -1,4 +1,4 @@
-OPTION( BUILD_Vis_peekabot "Build Vis_peekabot Component" ON )
+OPTION( BUILD_Vis_peekabot "Build Vis_peekabot Component" OFF )
 
 if(BUILD_Vis_peekabot)
 GLOBAL_ADD_COMPONENT(Vis_peekabot Vis_peekabot.cpp )

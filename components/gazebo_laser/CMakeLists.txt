@@ -1,4 +1,4 @@
-OPTION( BUILD_Gazebo_laser "Build Gazebo_laser component" ON )
+OPTION( BUILD_Gazebo_laser "Build Gazebo_laser component" OFF )
 
 if(BUILD_Gazebo_laser)
 GLOBAL_ADD_COMPONENT(Gazebo_laser Gazebo_laser.cpp )
