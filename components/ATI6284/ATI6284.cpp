@@ -17,9 +17,6 @@
 
 #define PROTO_ID 55555
 
-//#define SRCETHADDR "\x00\x17\x31\xe6\xa1\x17"
-//#define DSTETHADDR "\x00\x0d\x56\x3b\xf6\x0a"
-
 namespace orocos_test
 {
 
@@ -27,7 +24,7 @@ ATI6284::ATI6284(std::string name) :
 			TaskContext(name, PreOperational),
 			wrench_port("Wrench_output"),
 			device_prop("Net_Device", "UNIX network device name", "eth0"),
-			timeout_prop("Timeout", "Communication timeout in us", 1000),
+			timeout_prop("Timeout", "Communication timeout [us]", 1000),
 			conversion_prop("Conversion_Matrix",
 					"Matrix used to convert tensometer readings into force and torque"),
 			scale_prop("Scale",
@@ -78,14 +75,16 @@ bool ATI6284::configureHook()
 bool ATI6284::startHook()
 {
 
+	for(int i=0; i<6; i++)
+		bias_raw[i] = 0.0;
 	doBias = true;
 	return true;
 }
 
 void ATI6284::updateHook()
 {
-	while (!readSensorData(data_raw))
-		;
+	if(readSensorData(data_raw))
+	{
 	if (doBias)
 	{
 		bias_raw = data_raw;
@@ -99,7 +98,7 @@ void ATI6284::updateHook()
 	for (int i = 0; i < 6; i++)
 		wrench[i] = data[i];
 	wrench_port.Set(wrench);
-
+	}
 }
 
 void ATI6284::stopHook()
@@ -151,7 +150,7 @@ void ATI6284::sendData(char* buf, unsigned int len)
 {
 	std::memcpy(txdata, buf, len);
 
-	if (sendto(sd, txbuf, sizeof(ethd) + len, 0, (struct sockaddr *) &haddr,
+	if (sendto(sd, txbuf, sizeof(ethd) + len + 2, 0, (struct sockaddr *) &haddr,
 			sizeof(haddr)) < 0)
 	{
 		perror("sendto()");
@@ -179,8 +178,8 @@ bool ATI6284::receiveData(char* buf, unsigned int len, unsigned int timeout)
 	else
 	{
 		recv(sd, rxbuf, sizeof(rxbuf), 0);
+		std::memcpy(buf, (rxbuf+17), len);
 	}
-	std::memcpy(buf, rxbuf, len);
 	return true;
 }
 
@@ -198,10 +197,10 @@ bool ATI6284::readSensorData(Vector6s &raw)
 	{
 		//return false;
 	}
-	data = (int16_t*) &packet[PACKET_DATA];
+	data = (int16_t*) (packet + PACKET_DATA);
 	for (unsigned int i = 0; i < 6; i++)
 	{
-		raw[i] = ntohs(data[i]);
+		raw[i] = (int16_t)ntohs(data[i]);
 	}
 	return true;
 }

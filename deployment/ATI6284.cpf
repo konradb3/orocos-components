@@ -2,7 +2,7 @@
 <!DOCTYPE properties SYSTEM "cpf.dtd">
 <properties>
   <simple name="Net_Device" type="string"><description>UNIX network device name to use</description><value>eth0</value></simple>
-  <simple name="Timeout" type="ulong"><description>Communication timeout in us</description><value>500</value></simple>
+  <simple name="Timeout" type="ulong"><description>Communication timeout in us</description><value>1000</value></simple>
   <struct name="Conversion_Matrix" type="array">
      <description>Matrix used to convert tensometer readings into force and torque</description>
      
@@ -57,5 +57,5 @@
      <simple type="double"><value>84.8843245576086</value></simple>
      <simple type="double"><value>80.9472037525247</value></simple>
   </struct>
-  <simple name="Addr" type="string"><description>MAC adress of sensor board</description><value>00:0d:56:3b:f6:0a</value></simple>
+  <simple name="Addr" type="string"><description>MAC adress of sensor board</description><value>aa:bb:cc:dd:ee:ff</value></simple>
 </properties>

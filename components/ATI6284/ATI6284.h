@@ -28,7 +28,7 @@
 
 #define PACKET_SIZE 8+6*2
 #define PACKET_ID 0
-#define PACKET_DATA 8
+#define PACKET_DATA 7
 
 namespace orocos_test
 {

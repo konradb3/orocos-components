@@ -29,7 +29,7 @@
   
   <struct name="ATI6284" type="orocos_test::ATI6284">
     <struct name="Activity" type="PeriodicActivity">
-      <simple name="Period" type="double"><value>0.0001</value></simple>
+      <simple name="Period" type="double"><value>0.002</value></simple>
       <simple name="Priority" type="short"><value>5</value></simple>
       <simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
     </struct>
