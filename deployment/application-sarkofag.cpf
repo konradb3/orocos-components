@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+
+	<!-- Structure of this file: |- Component 1 | |- Property file | |- Activity
+		info | |- Peer connections | |- Port connections | \- Scripts to load |
+		|- Component 2 | |- Property file | |- Activity info | |- Peer connections
+		| |- Port connections | \- Scripts to load ... -->
+
+	<simple name="Import" type="string">
+		<value>components/edp_sarkofag</value>
+	</simple>
+
+	<struct name="sarkofag" type="orocos_test::EDP_Sarkofag">
+		<struct name="Activity" type="PeriodicActivity">
+			<simple name="Period" type="double">
+				<value>0.001</value>
+			</simple>
+			<simple name="Priority" type="short">
+				<value>5</value>
+			</simple>
+			<simple name="Scheduler" type="string">
+				<value>ORO_SCHED_RT</value>
+			</simple>
+		</struct>
+
+		<simple name="AutoConf" type="boolean">
+			<value>0</value>
+		</simple>
+		<simple name="AutoStart" type="boolean">
+			<value>0</value>
+		</simple>
+
+		<struct name="Properties" type="PropertyBag">
+			<simple name="Port" type="string">
+				<value>/dev/ttyMI0</value>
+			</simple>
+		</struct>
+	</struct>
+
+</properties>

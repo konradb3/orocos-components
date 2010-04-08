@@ -66,7 +66,6 @@
 
   <struct name="pointcloud" type="orocos_test::Laser_pointCloud">
     	<struct name="Activity" type="NonPeriodicActivity">
-      		<!--<simple name="Period" type="double"><value>0.2</value></simple> -->
       		<simple name="Priority" type="short"><value>0</value></simple>
     		<simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
     	</struct>
@@ -85,7 +84,7 @@
       		<simple name="Priority" type="short"><value>0</value></simple>
     		<simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
     	</struct>
-    	<simple name="AutoStart" type="boolean"><value>1</value></simple>
+    	<simple name="AutoStart" type="boolean"><value>0</value></simple>
 
     	<struct name="Ports" type="PropertyBag">
       		<simple name="Point_Cloud_input" type="string"><value>cloud </value></simple>
@@ -93,4 +92,4 @@
 
   </struct>
 
-</properties>
+</properties> 
