@@ -2,7 +2,7 @@
  * ourptz.cpp
  *
  *  Created on: Jan 8, 2010
- *      Author: konradb3
+ *      Author: Konrad Banachowicz
  */
 
 #include <stdio.h>

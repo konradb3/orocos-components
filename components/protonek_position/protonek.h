@@ -2,7 +2,7 @@
  * protonek.hh
  *
  *  Created on: Sep 5, 2009
- *      Author: konradb3
+ *      Author: Konrad Banachowicz
  */
 
 #ifndef PROTONEK_HH_

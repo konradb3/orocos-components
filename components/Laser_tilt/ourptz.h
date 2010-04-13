@@ -2,7 +2,7 @@
  * ourptz.h
  *
  *  Created on: Jan 8, 2010
- *      Author: konradb3
+ *      Author: Konrad Banachowicz
  */
 
 #ifndef OURPTZ_H_

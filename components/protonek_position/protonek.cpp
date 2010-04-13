@@ -2,7 +2,7 @@
  * protonek.cc
  *
  *  Created on: Sep 5, 2009
- *      Author: konradb3
+ *      Author: Konrad Banachowicz
  */
 
 #include <math.h>
