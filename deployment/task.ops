@@ -1,0 +1,10 @@
+export function runtask {
+	do edp_irp6ot.start();
+	do edp_irp6ot.mode.Set(0);
+	
+	do jnttrajectorygen.start();
+	do jnttrajectorygen.moveTo(array(0.000000, 0.000000, -1.570000, 0.000000, 1.560000, 1.570000, -1.570000), 15);
+	do jnttrajectorygen.stop()
+	
+	do edp_irp6ot.mode.Set(1);
+}

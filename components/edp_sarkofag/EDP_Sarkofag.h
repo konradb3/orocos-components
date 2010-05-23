@@ -69,11 +69,19 @@ public:
 	 */
 	void cleanupHook();
 protected:
-	RTT::DataPort<double> positionSetpoint_port;
-	RTT::DataPort<double> positionCurrent_port;
+	RTT::ReadDataPort<double> cmdJntPos_port;
+	RTT::WriteDataPort<double> msrJntPos_port;
 
 	RTT::Property<std::string> dev_prop;
 private:
+
+	void doCommunication();
+
+
+	double cmdJntPos;
+	double msrJntPos;
+
+	// serial port stuff
 	int fd;
     struct termios oldtio;
 

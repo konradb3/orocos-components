@@ -34,6 +34,14 @@
 #include <rtt/Ports.hpp>
 #include <rtt/Event.hpp>
 #include <rtt/Properties.hpp>
+
+#include <kdl/frames.hpp>
+
+#include <messip.h>
+
+#include "com_buf.h"
+
+
 namespace orocos_test
 {
 class edp_irp6ot: public RTT::TaskContext
@@ -68,13 +76,40 @@ public:
 
 protected:
 
-	RTT::DataPort<std::vector<double> > positionSetpoint_port;
+	RTT::DataPort<int> control_mode_port;
 
-	RTT::DataPort<std::vector<double> > positionCurrent_port;
+	RTT::DataPort<std::vector<double> > cmdJntPos_port;
+	RTT::DataPort<KDL::Frame> cmdCartPos_port;
+
+	RTT::DataPort<std::vector<double> > msrJntPos_port;
+	RTT::DataPort<KDL::Frame> msrCartPos_port;
+
+	RTT::Property<std::string> mrrocpp_path_prop;
 
 	RTT::Constant<unsigned int> number_of_axes;
 private:
-	std::vector<double> joint_pos;
+	std::vector<double> cmdJntPos;
+	std::vector<double> msrJntPos;
+
+	KDL::Frame cmdCartPos;
+	KDL::Frame msrCartPos;
+
+	int control_mode;
+
+	mrrocpp::lib::ecp_command_buffer ecp_command;
+	mrrocpp::lib::r_buffer reply_package;
+	messip_channel_t *EDP_fd;
+	std::string edp_net_attach_point;
+
+	std::string program_name;
+	std::string mrrocpp_path;
+
+	bool init;
+
+	void spawnEDP();
+	void send();
+	void query();
+
 };
 }
 #endif

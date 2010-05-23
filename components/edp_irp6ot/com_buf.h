@@ -6,47 +6,68 @@
  *  \author   tkornuta
  *  \date     2006-11-29
  *  \URL: https://segomo.elka.pw.edu.pl/svn/mrrocpp/base/trunk/include/lib/com_buf.h $
- *  $LastChangedRevision: 3273 $
- *  $LastChangedDate: 2009-12-18 22:10:13 +0100 (Fri, 18 Dec 2009) $
- *  $LastChangedBy: konradb3 $
+ *  $LastChangedRevision$
+ *  $LastChangedDate$
+ *  $LastChangedBy$
  *
+ *  \todo <ul>
+ *          <li>Translate to English where necessary.</li>
+ *          <li>Write detailed comments.</li>
+ *          <li>Suplement comments for those consts, variables and structures
+ *              that are not commented at all.</li>
+ *          <li>Clean up the commented fragments of code.</li>
+ *        </ul>
  */
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifndef __COM_BUF_H
 #define __COM_BUF_H
 
-#include <inttypes.h>
+//#include "lib/typedefs.h"
+
+
+#define MAX_SERVOS_NR 8
 
 #include <messip.h>
 
+
 #include <boost/serialization/serialization.hpp>
 
-#define MAX_SERVOS_NR 8
-enum STATE
-{
-	GET_STATE,
-	GET_SYNCHRO,
-	SYNCHRO_TERMINATED,
-	GET_INSTRUCTION,
-	EXECUTE_INSTRUCTION,
-	WAIT,
-	WAIT_Q
-};
-
-namespace mrrocpp
-{
-
-namespace lib
-{
+namespace mrrocpp {
+namespace lib {
 
 typedef double frame_tab[3][4];
+
+typedef enum _ROBOT_ENUM {
+	ROBOT_UNDEFINED,
+	ROBOT_IRP6_ON_TRACK,
+	ROBOT_IRP6OT_TFG,
+	ROBOT_IRP6OT_M,
+	ROBOT_IRP6_POSTUMENT,
+	ROBOT_IRP6P_TFG,
+	ROBOT_IRP6P_M,
+	ROBOT_CONVEYOR,
+	ROBOT_SPEAKER,
+	ROBOT_IRP6_MECHATRONIKA,
+	ROBOT_POLYCRANK,
+	ROBOT_ELECTRON,
+	ROBOT_FESTIVAL,
+	ROBOT_HAND,
+	ROBOT_SPEECHRECOGNITION,
+	ROBOT_SMB,
+	ROBOT_SPKM,
+	ROBOT_SHEAD,
+	ROBOT_BIRD_HAND // three finger Krzysztof Mianowski gripper 2010
+} robot_name_t;
+
+#define ECP_EDP_SERIALIZED_COMMAND_SIZE 1000
+#define EDP_ECP_SERIALIZED_REPLY_SIZE 1000
+
 //------------------------------------------------------------------------------
 /*!
  *  Type of command sent from MP to ECP.
  */
-enum MP_COMMAND
-{
+enum MP_COMMAND {
 	INVALID_COMMAND, START_TASK, NEXT_POSE, END_MOTION, NEXT_STATE, STOP
 };
 
@@ -54,8 +75,7 @@ enum MP_COMMAND
 /*!
  *  Type of reply from ECP to the MP command.
  */
-enum ECP_REPLY
-{
+enum ECP_REPLY {
 	INCORRECT_MP_COMMAND, ERROR_IN_ECP, ECP_ACKNOWLEDGE, TASK_TERMINATED
 };
 
@@ -63,8 +83,7 @@ enum ECP_REPLY
 /*!
  *  Type of arm position definition.
  */
-enum POSE_SPECIFICATION
-{
+enum POSE_SPECIFICATION {
 	INVALID_END_EFFECTOR, FRAME, JOINT, MOTOR, PF_VELOCITY
 };
 
@@ -72,21 +91,20 @@ enum POSE_SPECIFICATION
 /*!
  *  Type of arm position definition on the ECP level.
  */
-enum ECP_POSE_SPECIFICATION
-{
+enum ECP_POSE_SPECIFICATION {
 	ECP_INVALID_END_EFFECTOR,
 	ECP_XYZ_ANGLE_AXIS,
 	ECP_XYZ_EULER_ZYZ,
 	ECP_JOINT,
-	ECP_MOTOR
+	ECP_MOTOR,
+	ECP_PF_VELOCITY
 };
 
 //------------------------------------------------------------------------------
 /*!
  *  Reply types from UI to ECP and commands from UI (pressing a button).
  */
-enum UI_TO_ECP_COMMAND
-{
+enum UI_TO_ECP_COMMAND {
 	INVALID_REPLY,
 	NEXT,
 	QUIT,
@@ -139,8 +157,7 @@ enum UI_TO_ECP_COMMAND
 /*!
  *  Types of ECP to UI commands.
  */
-enum ECP_TO_UI_COMMAND
-{
+enum ECP_TO_UI_COMMAND {
 	C_INVALID_END_EFFECTOR,
 	C_FRAME,
 	C_XYZ_ANGLE_AXIS,
@@ -163,11 +180,100 @@ enum ECP_TO_UI_COMMAND
 };
 
 //------------------------------------------------------------------------------
+/*! Length of a message sent from ECP to MP or UI */
+#define MSG_LENGTH 60
+
+//------------------------------------------------------------------------------
+/*!
+ *  ECP to UI message.
+ */
+struct ECP_message {
+	/*! Type of message. */
+	ECP_TO_UI_COMMAND ecp_message;
+	/*! Robot name. */
+	robot_name_t robot_name;
+	/*! Number of options - from 2 to 4 - - for CHOOSE_OPTION mode. */
+	uint8_t nr_of_options;
+
+	//----------------------------------------------------------
+	union {
+		/*! A comment for the command. */
+		char string[MSG_LENGTH];
+
+		//------------------------------------------------------
+		struct {
+			double robot_position[MAX_SERVOS_NR];
+			double sensor_reading[MAX_SERVOS_NR];
+		}
+		/*! Robot positions + Sensor readings. */
+		RS;
+		//------------------------------------------------------
+		struct {
+			double robot_position[MAX_SERVOS_NR];
+			double digital_scales_sensor_reading[6];
+			double force_sensor_reading[6];
+		}
+		/*! Robot positions + 2 * (Sensor readings). */
+		R2S;
+		//------------------------------------------------------
+		struct {
+			double robot_position[MAX_SERVOS_NR];
+			double sensor_reading[6];
+			int measure_number;
+		}
+		/*! Robot positions + Sensor readings + Measure number. */
+		MAM;
+	};
+};
+
+
+//------------------------------------------------------------------------------
+/*!
+ *  Message from UI to ECP.
+ */
+struct UI_ECP_message {
+
+	UI_TO_ECP_COMMAND command;
+
+	union {
+		/*! The name of the file. */
+		char filename[100];
+		/*! Time of the robot's motion. */
+		int motion_time;
+		/*! (axis - 1..6) && (+/- left/right). */
+		short move_type;
+		/*! Change of control type. */
+		POSE_SPECIFICATION ps;
+	};
+};
+
+//------------------------------------------------------------------------------
+/*!
+ *  Trajectory description for a chosen type of interpolation.
+ *
+ *  @warning  Enum type POSE_SPECIFICATION moved to the front
+ *            of the file, because it is used in this structure.
+ *            Connected with C_MOTOR and C_JOINT etc. - watch out for the indexes.
+ *  @see      POSE_SPECIFICATION  C_MOTOR  C_JOINT.
+ */
+struct trajectory_description {
+	/*! Robot arm representation. */
+	ECP_POSE_SPECIFICATION arm_type;
+	/*! Number of interpolation nodes. */
+	unsigned int interpolation_node_no;
+	/*! Number of steps for a single internode. */
+	int internode_step_no;
+	/*! Step in which the read position is returned. */
+	int value_in_step_no;
+	/*! Coordinates increment table. */
+	double coordinate_delta[MAX_SERVOS_NR];
+};
+
+//------------------------------------------------------------------------------
 /*!
  *  Types of processes in MRROC++.
  */
-typedef enum _PROCESS_TYPE
-{
+typedef enum _PROCESS_TYPE {
 	UNKNOWN_PROCESS_TYPE, EDP, ECP, MP, VSP, UI
 } process_type_t;
 
@@ -181,16 +287,6 @@ typedef enum _PROCESS_TYPE
 #define ROBOT_MODEL_DEFINITION                          0x02
 #define OUTPUTS_DEFINITION                              0x01
 #define NOTHING_DEFINITION                              0x00
-//------------------------------------------------------------------------------
-/*!
- *  Definitions for available values of set_type i get_type.
- *  @author yoyek
- */
-#define CONTROLLER_STATE_DV                     0x08
-#define ARM_DV                                  0x04
-#define RMODEL_DV                               0x02
-#define OUTPUTS_DV                              0x01
-#define NOTHING_DV                              0x00
 
 //------------------------------------------------------------------------------
 /*! Error numbers generated in EDP.	*/
@@ -198,9 +294,9 @@ typedef enum _PROCESS_TYPE
 
 #define INVALID_INSTRUCTION_TYPE                0x0100000000000000ULL
 #define INVALID_REPLY_TYPE                      0x0200000000000000ULL
-#define INVALID_SET_RMODEL_TYPE                 0x0300000000000000ULL
-#define INVALID_GET_RMODEL_TYPE                 0x0400000000000000ULL
-#define ERROR_IN_RMODEL_REQUEST                 0x0500000000000000ULL
+#define INVALID_SET_ROBOT_MODEL_TYPE                 0x0300000000000000ULL
+#define INVALID_GET_ROBOT_MODEL_TYPE                 0x0400000000000000ULL
+#define ERROR_IN_ROBOT_MODEL_REQUEST                 0x0500000000000000ULL
 #define INVALID_HOMOGENEOUS_MATRIX              0x0600000000000000ULL
 
 #define QUERY_EXPECTED                          0x1000000000000000ULL
@@ -298,8 +394,7 @@ typedef enum _PROCESS_TYPE
 
 //------------------------------------------------------------------------------
 /*! Error classes. */
-typedef enum _ERROR_CLASS
-{
+typedef enum _ERROR_CLASS {
 	NEW_MESSAGE, SYSTEM_ERROR, FATAL_ERROR, NON_FATAL_ERROR
 } error_class_t;
 
@@ -307,7 +402,7 @@ typedef enum _ERROR_CLASS
 /*! Detailed errors generated by ECP and MP. */
 #define INVALID_MP_COMMAND                       0x1ULL
 #define INVALID_POSE_SPECIFICATION               0x2ULL
-#define INVALID_RMODEL_TYPE                      0x3ULL
+#define INVALID_ROBOT_MODEL_TYPE                      0x3ULL
 #define INVALID_ECP_COMMAND                      0x4ULL
 #define INVALID_EDP_REPLY                        0x5ULL
 #define ECP_ERRORS                               0x6ULL
@@ -378,8 +473,7 @@ typedef enum _ERROR_CLASS
 #define RCS_EXCEPTION                           0x11ULL
 
 //------------------------------------------------------------------------------
-enum GRIPPER_STATE_ENUM
-{
+enum GRIPPER_STATE_ENUM {
 	GRIPPER_START_STATE,
 	GRIPPER_EXPAND_STATE,
 	GRIPPER_NARROW_STATE,
@@ -389,15 +483,13 @@ enum GRIPPER_STATE_ENUM
 };
 
 //------------------------------------------------------------------------------
-enum INSTRUCTION_TYPE
-{
+enum INSTRUCTION_TYPE {
 	INVALID, SET, GET, SET_GET, SYNCHRO, QUERY
 };
 
 //------------------------------------------------------------------------------
-enum RMODEL_SPECIFICATION
-{
-	INVALID_RMODEL,
+enum ROBOT_MODEL_SPECIFICATION {
+	INVALID_ROBOT_MODEL,
 	TOOL_FRAME,
 	ARM_KINEMATIC_MODEL,
 	SERVO_ALGORITHM,
@@ -406,31 +498,29 @@ enum RMODEL_SPECIFICATION
 };
 
 //------------------------------------------------------------------------------
-enum MOTION_TYPE
-{
+enum MOTION_TYPE {
 	ABSOLUTE, RELATIVE
 };
 
 //------------------------------------------------------------------------------
-// MOTOR_INTERPOLATED_MOTION TASK_COORDINATES_INTERPOLATED_MOTION
-enum INTERPOLATION_TYPE
-{
-	MIM, TCIM
+enum INTERPOLATION_TYPE {
+	MIM, //! motor interpolated motion
+	TCIM
+//! task coordinates interpolated motion
 };
 
 //------------------------------------------------------------------------------
-enum REPLY_TYPE
-{
+enum REPLY_TYPE {
 	ERROR,
 	ACKNOWLEDGE,
 	SYNCHRO_OK,
 	ARM,
-	RMODEL,
+	ROBOT_MODEL,
 	INPUTS,
-	ARM_RMODEL,
+	ARM_ROBOT_MODEL,
 	ARM_INPUTS,
-	RMODEL_INPUTS,
-	ARM_RMODEL_INPUTS,
+	ROBOT_MODEL_INPUTS,
+	ARM_ROBOT_MODEL_INPUTS,
 	CONTROLLER_STATE
 /*
  * TODO: would not be it easier to handle with the following?
@@ -438,87 +528,126 @@ enum REPLY_TYPE
  ACKNOWLEDGE = 0x01,
  SYNCHRO_OK = 0x02,
  ARM = 0x04,
- RMODEL = 0x08,
+ ROBOT_MODEL = 0x08,
  INPUTS = 0x10,
- ARM_RMODEL = 0x20,
+ ARM_ROBOT_MODEL = 0x20,
  ARM_INPUTS = 0x40,
- RMODEL_INPUTS = 0x80,
- ARM_RMODEL_INPUTS = 0x100,
+ ROBOT_MODEL_INPUTS = 0x80,
+ ARM_ROBOT_MODEL_INPUTS = 0x100,
  CONTROLLER_STATE = 0x200
  */
 };
 
 //------------------------------------------------------------------------------
 /*! @todo Rename from "behavior". */
-enum BEHAVIOUR_SPECIFICATION
-{
+enum BEHAVIOUR_SPECIFICATION {
 	UNGUARDED_MOTION, GUARDED_MOTION, CONTACT
 };
 
 //------------------------------------------------------------------------------
 /*! Structure for error codes. */
-struct edp_error
-{
+struct edp_error {
 	uint64_t error0;
 	uint64_t error1;
 };
 
 //------------------------------------------------------------------------------
-enum SERVO_COMMAND
-{
+enum SERVO_COMMAND {
 	MOVE, READ, SYNCHRONISE, SERVO_ALGORITHM_AND_PARAMETERS
+};
+
+//------------------------------------------------------------------------------
+/*! Structure of a command from EDP_MASTER to SERVO_GROUP. */
+struct edp_master_command {
+	/*! Code for the instruction sent to SERVO_GROUP. */
+	SERVO_COMMAND instruction_code;
+	union {
+		//------------------------------------------------------
+		struct {
+			/*! Number of steps for a macrostep. */
+			uint16_t number_of_steps;
+			/*!
+			 *  Number of steps after which the information about the previously
+			 *  realized position is to be sent.
+			 *  Information is sent to EDP_MASTER using READING_BUFFER.
+			 *  After k steps SERVO has the position from the k-1 step.
+			 */
+			uint16_t return_value_in_step_no;
+			/*! Length of a macrostep (given value of a macrostep - increase). */
+			double macro_step[MAX_SERVOS_NR];
+			/*! Given absolute position at the end of a macrostep. */
+			double abs_position[MAX_SERVOS_NR];
+		} move;
+		//------------------------------------------------------
+		struct {
+			/*! Servo algorithm numbers. */
+			uint8_t servo_algorithm_no[MAX_SERVOS_NR];
+			/*! Numbers fo servo algorithm parameters set. */
+			uint8_t servo_parameters_no[MAX_SERVOS_NR];
+		} servo_alg_par;
+
+	} parameters;
+};
+
+//------------------------------------------------------------------------------
+/*! Structure of a reply from SERVO_GROUP to EDP_MASTER. */
+struct servo_group_reply {
+	/*! Error code. */
+	edp_error error;
+	/*! Position increment of the motor shaft reached since the last reading. */
+	double position[MAX_SERVOS_NR];
+	/*! Absolute position of the joints (in radians). */
+	double abs_position[MAX_SERVOS_NR];
+	/*! Given values for PWM fill (Phase Wave Modulation) - (usualy unnecessary). */
+	int16_t PWM_value[MAX_SERVOS_NR];
+	/*! Control current - (usualy unnecessary). */
+	int16_t current[MAX_SERVOS_NR];
+	/*! Numbers for the regulation algorithms in use. */
+	uint8_t algorithm_no[MAX_SERVOS_NR];
+	uint8_t algorithm_parameters_no[MAX_SERVOS_NR];
+	/*! Gripper regulator state. */
+	short gripper_reg_state;
 };
 
 //------------------------------------------------------------------------------
 //                                  c_buffer
 //------------------------------------------------------------------------------
-
+#define MAX_TEXT 100 // MAC7
+#define MAX_PROSODY 20 // MAC7
 
 //------------------------------------------------------------------------------
-/*! rmodel */
-typedef union c_buffer_rmodel
-{
+/*! robot_model */
+typedef union c_buffer_robot_model {
 	//----------------------------------------------------------
-	struct
-	{
+	struct {
 		/*! Tool trihedron ralative to the collar. */
 		frame_tab tool_frame;
 	} tool_frame_def;
 	//----------------------------------------------------------
-	struct
-	{
-		/*! Parameter set number for the kinematic model. */
+	struct {
+		/*! Parameter set number for the kinematic kinematic_model_with_tool. */
 		uint8_t kinematic_model_no;
 	} kinematic_model;
 	//----------------------------------------------------------
-	struct
-	{
+	struct {
 		/*! Numbers for the servo-regulation algorithms. */
 		uint8_t servo_algorithm_no[MAX_SERVOS_NR];
 		/*! Parameter set numbers for the servo-regulation algorithms. */
 		uint8_t servo_parameters_no[MAX_SERVOS_NR];
 	} servo_algorithm;
 	//----------------------------------------------------------
-	struct
-	{
-		double position[3];
+	struct {
+		double position[3]; // TODO: this should be a Eigen::Vector3f
 		double weight;
 	} force_tool;
 
-} c_buffer_rmodel_t;
+} c_buffer_robot_model_t;
 
 //------------------------------------------------------------------------------
 /*! arm */
-typedef union c_buffer_arm
-{
-	struct
-	{
-		/*! A get_state command variant. */
-		int command;
-	} get_state_def;
+typedef union c_buffer_arm {
 	//----------------------------------------------------------
-	struct
-	{
+	struct {
 		/*!  End's trihedron ralative to the base system. */
 		frame_tab arm_frame;
 		/*! XYZ + end's orientation relative to the base system. */
@@ -531,12 +660,19 @@ typedef union c_buffer_arm
 		/*! Dilation degree of the gripper. */
 		double gripper_coordinate;
 	} pf_def;
-
+	//----------------------------------------------------------
+	struct {
+		/*! text to speak */
+		char text[MAX_TEXT];
+		/*! prosody of the text to speak */
+		char prosody[MAX_PROSODY];
+	} text_def;
+	//----------------------------------------------------------
+	char serialized_command[ECP_EDP_SERIALIZED_COMMAND_SIZE];
 } c_buffer_arm_t;
 
 //------------------------------------------------------------------------------
-struct c_buffer
-{
+struct c_buffer {
 	/*! Type of the instruction. */
 	INSTRUCTION_TYPE instruction_type;
 	/*! Type of the SET instruction. */
@@ -544,9 +680,9 @@ struct c_buffer
 	/*! Type of the GET instruction. */
 	uint8_t get_type;
 	/*! Tool definition type - setting. */
-	RMODEL_SPECIFICATION set_rmodel_type;
+	ROBOT_MODEL_SPECIFICATION set_robot_model_type;
 	/*! Tool definition type - reading. */
-	RMODEL_SPECIFICATION get_rmodel_type;
+	ROBOT_MODEL_SPECIFICATION get_robot_model_type;
 	/*! Definition type of the end-effector's given position. */
 	POSE_SPECIFICATION set_arm_type;
 	/*! Definition type of the end-effector's read position. */
@@ -585,27 +721,32 @@ struct c_buffer
 	 *  realizacji srodkowej fazy makrokroku.
 	 */
 	uint16_t value_in_step_no;
-	c_buffer_rmodel_t rmodel;
+	c_buffer_robot_model_t robot_model;
 	c_buffer_arm_t arm;
-	/*
-	 friend class boost::serialization::access;
 
-	 template<class Archive>
-	 void serialize(Archive & ar, const unsigned int version)
-	 {
-	 ar & instruction_type;
-	 ar & set_type;
-	 ar & get_type;
-	 ar & set_rmodel_type;
-	 ar & get_rmodel_type;
-	 ar & set_arm_type;
-	 ar & get_arm_type;
-	 ar & output_values;
-	 ar & interpolation_type;
-	 ar & motion_type;
-	 ar & motion_steps;
-	 }
-	 */
+	//-----------------------------------------------------
+	//                      METHODS
+	//-----------------------------------------------------
+
+	//! Give access to boost::serialization framework
+	friend class boost::serialization::access;
+
+	//! Serialization of the data structure
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version) {
+		ar & instruction_type;
+		ar & set_type;
+		ar & get_type;
+		ar & set_robot_model_type;
+		ar & get_robot_model_type;
+		ar & set_arm_type;
+		ar & get_arm_type;
+		ar & output_values;
+		ar & interpolation_type;
+		ar & motion_type;
+		ar & motion_steps;
+	}
+
 };
 
 //------------------------------------------------------------------------------
@@ -614,35 +755,26 @@ struct c_buffer
 
 
 //------------------------------------------------------------------------------
-/*! rmodel */
-typedef union r_buffer_rmodel
-{
+/*! robot_model */
+typedef union r_buffer_robot_model {
 	//----------------------------------------------------------
-	struct
-	{
+	struct {
 		/*!
 		 *  Macierz reprezentujaca narzedzie wzgledem konca lancucha kinematycznego.
 		 *  @todo Translate to English.
 		 */
 		frame_tab tool_frame;
-		//*! Byte for calculating the command's length. */
-		// 	uint8_t address_byte;
 	} tool_frame_def;
 	//----------------------------------------------------------
-	struct
-	{
+	struct {
 		/*!
 		 *  Numer modelu kinematyki.
 		 *  @todo Translate to English.
 		 */
 		uint8_t kinematic_model_no;
-
-		//*! Byte for calculating the command's length. */
-		// 	uint8_t address_byte;
 	} kinematic_model;
 	//----------------------------------------------------------
-	struct
-	{
+	struct {
 		/*!
 		 *  Numery algorytmow serworegulacji.
 		 *  @todo Translate to English.
@@ -655,17 +787,15 @@ typedef union r_buffer_rmodel
 		uint8_t servo_parameters_no[MAX_SERVOS_NR];
 	} servo_algorithm;
 	//----------------------------------------------------------
-	struct
-	{
+	struct {
 		double position[3];
 		double weight;
 	} force_tool;
 
-} r_buffer_rmodel_t;
+} r_buffer_robot_model_t;
 
 //------------------------------------------------------------------------------
-typedef struct _controller_state_t
-{
+typedef struct _controller_state_t {
 	/*! Is robot synchronised? */
 	bool is_synchronised;
 	/*!
@@ -688,10 +818,8 @@ typedef struct _controller_state_t
 
 //------------------------------------------------------------------------------
 /*! arm */
-typedef union r_buffer_arm
-{
-	struct
-	{
+typedef union r_buffer_arm {
+	struct {
 		/*! Given values for PWM fill (Phase Wave Modulation) - (usualy unnecessary). */
 		int16_t PWM_value[MAX_SERVOS_NR];
 		/*! Control current - (usualy unnecessary). */
@@ -717,27 +845,22 @@ typedef union r_buffer_arm
 		 *  @todo Translate to English.
 		 */
 		double gripper_coordinate;
-		//*! Byte for calculating the command's length. */
-		// 	uint8_t address_byte;
-
 	} pf_def;
 	//----------------------------------------------------------
-	struct
-	{
+	struct {
 		/*!
 		 *  Czy mowi?
 		 *  @todo Translate to English.
 		 */
-		int speaking;
-		//*! Byte for calculating the command's length. */
-		// 	uint8_t address_byte;
+		bool speaking;
 	} text_def;
+
+	char serialized_reply[EDP_ECP_SERIALIZED_REPLY_SIZE];
 
 } r_buffer_arm_t;
 
 //------------------------------------------------------------------------------
-struct r_buffer
-{
+struct r_buffer {
 	/*! Type of the reply. */
 	REPLY_TYPE reply_type;
 	/*! Number of the error (if it occured). */
@@ -746,7 +869,7 @@ struct r_buffer
 	 *  Sposob zdefiniowania narzedzia przy jego odczycie.
 	 *  @todo Translate to English.
 	 */
-	RMODEL_SPECIFICATION rmodel_type;
+	ROBOT_MODEL_SPECIFICATION robot_model_type;
 	/*!
 	 *  Sposob  zdefiniowania polozenia zadanego koncowki.
 	 *  @todo Translate to English.
@@ -762,27 +885,64 @@ struct r_buffer
 	controller_state_t controller_state;
 	/*! Number of the servo step. */
 	unsigned long servo_step;
-	/*! Byte for calculating the command's length. */
-	uint8_t address_byte;
 	/*! Given values for PWM fill (Phase Wave Modulation) - (usualy unnecessary). */
 	int16_t PWM_value[MAX_SERVOS_NR];
 	/*! Control current - (usualy unnecessary). */
 	int16_t current[MAX_SERVOS_NR];
-	r_buffer_rmodel_t rmodel;
+	r_buffer_robot_model_t robot_model;
 	r_buffer_arm_t arm;
 
-	//-----------------------------------------------------
-	//                      METHODS
-	//-----------------------------------------------------
-	//r_buffer (void); // W odkomentowane
 }__attribute__((__packed__));
 
-struct ecp_command_buffer
-{
-	/*! This is a message buffer, so it needs a message header */
-	//	msg_header_t hdr;
+//------------------------------------------------------------------------------
+/*! Target position for the mobile robot. */
+class playerpos_goal_t {
+private:
+	double x, y, t;
+
+public:
+	void forward(double length);
+	void turn(double angle);
+	void setGoal(double _x, double _y, double _z);
+
+	double getX() const;
+	double getY() const;
+	double getT() const;
+
+	playerpos_goal_t(double _x, double _y, double _t);
+	playerpos_goal_t();
+};
+
+//------------------------------------------------------------------------------
+struct ecp_command_buffer {
 	c_buffer instruction;
 };
+
+//------------------------------------------------------------------------------
+#ifndef SPEECH_RECOGNITION_TEXT_LEN
+#define SPEECH_RECOGNITION_TEXT_LEN 256
+#endif
+
+//------------------------------------------------------------------------------
+/*! ECP to MP reply. */
+struct ECP_REPLY_PACKAGE {
+	ECP_REPLY reply;
+
+	// TODO: this should be rather union, but it is not possible to union non-POD objects
+	r_buffer reply_package;
+	char commandRecognized[SPEECH_RECOGNITION_TEXT_LEN];
+};
+// ------------------------------------------------------------------------
+
+/*
+ // by Y
+ inline void copy_frame(frame_tab destination_frame, frame_tab source_frame)
+ {
+ for (int   column = 0; column < 4; column++)
+ for (int row = 0; row < 3; row++)
+ destination_frame[column][row] = source_frame[column][row];
+ }
+ */
 
 } // namespace lib
 } // namespace mrrocpp

@@ -36,11 +36,12 @@ namespace orocos_test
 {
 
 EDP_Sarkofag::EDP_Sarkofag(std::string name) :
-	TaskContext(name, PreOperational), positionSetpoint_port("Position_setpoint"),
-			positionCurrent_port("Position_current"), dev_prop("Port", "UNIX serial port", "/dev/ttyMI0")
+	TaskContext(name, PreOperational), cmdJntPos_port("JntPosCmd"),
+			msrJntPos_port("JntPosMsr"), dev_prop("Port", "UNIX serial port",
+					"/dev/ttyMI0")
 {
-	this->ports()->addPort(&positionSetpoint_port);
-	this->ports()->addPort(&positionCurrent_port);
+	this->ports()->addPort(&cmdJntPos_port);
+	this->ports()->addPort(&msrJntPos_port);
 
 	this->properties()->addProperty(&dev_prop);
 }
@@ -81,6 +82,26 @@ bool EDP_Sarkofag::startHook()
 
 void EDP_Sarkofag::updateHook()
 {
+	cmdJntPos_port.Get(cmdJntPos);
+	doCommunication();
+	msrJntPos_port.Set(msrJntPos);
+}
+
+void EDP_Sarkofag::stopHook()
+{
+
+}
+
+void EDP_Sarkofag::cleanupHook()
+{
+	/// restore serial settings ///
+	if (fd > 0)
+		tcsetattr(fd, TCSANOW, &oldtio);
+	close(fd);
+}
+
+void EDP_Sarkofag::doCommunication()
+{
 	int dlen = 0;
 	data[0] = 0;
 	data[1] = '#';
@@ -89,7 +110,10 @@ void EDP_Sarkofag::updateHook()
 	data[4] = 0;
 	data[5] = 0;
 
-	write(fd, data, 10);
+	int ret = write(fd, data, 10);
+
+	if (ret < 10)
+		log(RTT::Warning) << "Write failed !!" << RTT::endlog();
 
 	fd_set rfds;
 
@@ -114,24 +138,6 @@ void EDP_Sarkofag::updateHook()
 			dlen += read(fd, data, 8 - dlen);
 		}
 	}
-
-	positionCurrent_port.Set((double)((((int16_t*)data)[1])));
-
-//	log(RTT::Debug) << (int)data[0] << " " << (int)data[1] << " " << (int)data[2] << " " << (int)data[3] << " " << (int)data[4] << " " << (int)data[5] << RTT::endlog();
-
-}
-
-void EDP_Sarkofag::stopHook()
-{
-
-}
-
-void EDP_Sarkofag::cleanupHook()
-{
-	/// restore serial settings ///
-	if (fd > 0)
-		tcsetattr(fd, TCSANOW, &oldtio);
-	close(fd);
 }
 
 }
