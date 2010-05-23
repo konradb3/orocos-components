@@ -1,10 +1,8 @@
 /*
- * edp_irp6ot.h
+ * CirclePosGenerator.h
  *
- *  Created on: Dec 11, 2009
+ *  Created on: 2010-05-23
  *      Author: Konrad Banachowicz
- *      Copyright : (C) 2010
- *
  ***************************************************************************
  *   This library is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU Lesser General Public            *
@@ -23,10 +21,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef EDP_IRP6P_HPP
-#define EDP_IRP6P_HPP
-
-#include <vector>
+#ifndef CIRCLEPOSGENERATOR_H_
+#define CIRCLEPOSGENERATOR_H_
 
 #include <rtt/RTT.hpp>
 
@@ -37,17 +33,15 @@
 
 #include <kdl/frames.hpp>
 
-#include <messip.h>
-
-#include "com_buf.h"
-
-
 namespace orocos_test
 {
-class edp_irp6ot: public RTT::TaskContext
+
+class CirclePosGenerator : public RTT::TaskContext
 {
 public:
-	edp_irp6ot(std::string name);
+	CirclePosGenerator(std::string name);
+	virtual ~CirclePosGenerator();
+
 	/**
 	 * This function is for the configuration code.
 	 * Return false to abort configuration.
@@ -75,41 +69,15 @@ public:
 	void cleanupHook();
 
 protected:
-
-	RTT::Property<int> control_mode_prop;
-
-	RTT::DataPort<std::vector<double> > cmdJntPos_port;
-	RTT::DataPort<KDL::Frame> cmdCartPos_port;
-
-	RTT::DataPort<std::vector<double> > msrJntPos_port;
-	RTT::DataPort<KDL::Frame> msrCartPos_port;
-
-	RTT::Property<std::string> mrrocpp_path_prop;
-
-	RTT::Constant<unsigned int> number_of_axes;
+	RTT::ReadDataPort<KDL::Frame> msrCartPos_port;
+	RTT::WriteDataPort<KDL::Frame> cmdCartPos_port;
 private:
-	std::vector<double> cmdJntPos;
-	std::vector<double> msrJntPos;
-
+	KDL::Frame start;
 	KDL::Frame cmdCartPos;
-	KDL::Frame msrCartPos;
 
-	int control_mode;
-
-	mrrocpp::lib::ecp_command_buffer ecp_command;
-	mrrocpp::lib::r_buffer reply_package;
-	messip_channel_t *EDP_fd;
-	std::string edp_net_attach_point;
-
-	std::string program_name;
-	std::string mrrocpp_path;
-
-	bool init;
-
-	void spawnEDP();
-	void send();
-	void query();
-
+	int step;
 };
+
 }
-#endif
+
+#endif /* CIRCLEPOSGENERATOR_H_ */

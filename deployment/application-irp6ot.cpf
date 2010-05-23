@@ -23,7 +23,7 @@
   <simple name="Import" type="string"><value>/usr/lib/rtt/gnulinux/plugins/liborocos-kdltk-gnulinux</value></simple>
   <simple name="Import" type="string"><value>/usr/lib/liborocos-naxes-gnulinux.so</value></simple>
   <simple name="Import" type="string"><value>components/edp_irp6ot</value></simple>
-
+  <simple name="Import" type="string"><value>components/CirclePosGenerator</value></simple>
 
 <!-- EDP's -->
   <struct name="edp_irp6ot" type="orocos_test::edp_irp6ot">
@@ -37,12 +37,14 @@
     	<struct name="Ports" type="PropertyBag">
       		<simple name="msrJntPos" type="string"><value>CurPosition_irp6ot </value></simple>
       		<simple name="cmdJntPos" type="string"><value>Setpoint_irp6ot </value></simple>
+      		<simple name="msrCartPos" type="string"><value>msrCartPos </value></simple>
+      		<simple name="cmdCartPos" type="string"><value>cmdCartPos </value></simple>
     	</struct>
   </struct>
 
-  <struct name="jnttrajectorygen" type="OCL::nAxesGeneratorPos">
+  <struct name="jnt_generator" type="OCL::nAxesGeneratorPos">
     	<struct name="Activity" type="PeriodicActivity">
-    	    <simple name="Period" type="double"><value>0.1</value></simple>
+    	    <simple name="Period" type="double"><value>0.01</value></simple>
       		<simple name="Priority" type="short"><value>0</value></simple>
     		<simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
     	</struct>
@@ -57,5 +59,22 @@
       		<simple name="nAxesDesiredPosition" type="string"><value>Setpoint_irp6ot </value></simple>
     	</struct>
   </struct>
+  
+    <struct name="circle_generator" type="orocos_test::CirclePosGenerator">
+    	<struct name="Activity" type="PeriodicActivity">
+    	    <simple name="Period" type="double"><value>0.01</value></simple>
+      		<simple name="Priority" type="short"><value>0</value></simple>
+    		<simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
+    	</struct>
+    	<simple name="AutoConf" type="boolean"><value>1</value></simple>
+    	<simple name="AutoStart" type="boolean"><value>0</value></simple>
+    	
+    	<!-- List all peers (uni-directional) -->
+    	<struct name="Ports" type="PropertyBag">
+      		<simple name="msrCartPos" type="string"><value>msrCartPos </value></simple>
+      		<simple name="cmdCartPos" type="string"><value>cmdCartPos </value></simple>
+    	</struct>
+  </struct>
+  
   
 </properties>

@@ -35,18 +35,18 @@
 namespace orocos_test
 {
 edp_irp6ot::edp_irp6ot(std::string name) :
-	TaskContext(name), control_mode_port("mode"), cmdJntPos_port("cmdJntPos"),
+	TaskContext(name), control_mode_prop("mode", "operation mode : 0 joint 1 cartesian", 0), cmdJntPos_port("cmdJntPos"),
 			cmdCartPos_port("cmdCartPos"), msrJntPos_port("msrJntPos"),
 			msrCartPos_port("msrCartPos"),
-			mrrocpp_path_prop("mrrocpp_path", "path to mrrocpp bin", "/home/konradb3/mrrocpp"),
+			mrrocpp_path_prop("mrrocpp_path", "path to mrrocpp bin", "/home/konrad/mrrocpp/bin/"),
 			number_of_axes("IRP6OT_NUM_AXES", IRP6OT_NUM_AXES), msrJntPos(IRP6OT_NUM_AXES)
 {
 	this->ports()->addPort(&cmdJntPos_port);
 	this->ports()->addPort(&msrJntPos_port);
 	this->ports()->addPort(&cmdCartPos_port);
 	this->ports()->addPort(&msrCartPos_port);
-	this->ports()->addPort(&control_mode_port);
 
+	this->attributes()->addProperty(&control_mode_prop);
 	this->attributes()->addProperty(&mrrocpp_path_prop);
 
 	this->attributes()->addConstant(&number_of_axes);
@@ -101,7 +101,7 @@ bool edp_irp6ot::startHook()
 
 void edp_irp6ot::updateHook()
 {
-	control_mode_port.Get(control_mode);
+	control_mode = control_mode_prop.get();
 
 	if (control_mode == 0)
 	{
@@ -123,6 +123,8 @@ void edp_irp6ot::updateHook()
 		}
 		else
 			ecp_command.instruction.instruction_type = mrrocpp::lib::GET;
+
+		cmdCartPos_port.Set(KDL::Frame::Identity());
 	}
 	else if (control_mode == 1)
 	{
@@ -173,6 +175,7 @@ void edp_irp6ot::updateHook()
 		else
 			ecp_command.instruction.instruction_type = mrrocpp::lib::GET;
 
+		cmdJntPos_port.Set(std::vector<double>());
 	}
 
 	send();
