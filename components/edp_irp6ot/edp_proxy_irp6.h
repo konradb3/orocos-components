@@ -44,10 +44,10 @@
 
 namespace orocos_test
 {
-class edp_irp6ot: public RTT::TaskContext
+class edp_proxy_irp6: public RTT::TaskContext
 {
 public:
-	edp_irp6ot(std::string name);
+	edp_proxy_irp6(std::string name);
 	/**
 	 * This function is for the configuration code.
 	 * Return false to abort configuration.
@@ -85,14 +85,17 @@ protected:
 	RTT::DataPort<KDL::Frame> msrCartPos_port;
 
 	RTT::Property<std::string> mrrocpp_path_prop;
+	RTT::Property<std::string> net_attach_point_prop;
 
-	RTT::Constant<unsigned int> number_of_axes;
+	RTT::Property<unsigned int> number_of_axes_prop;
 private:
 	std::vector<double> cmdJntPos;
 	std::vector<double> msrJntPos;
 
 	KDL::Frame cmdCartPos;
 	KDL::Frame msrCartPos;
+
+	unsigned int number_of_axes;
 
 	int control_mode;
 

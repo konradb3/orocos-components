@@ -1,4 +1,3 @@
-ADD_SUBDIRECTORY( edp_irp6p )
 ADD_SUBDIRECTORY( edp_irp6ot )
 ADD_SUBDIRECTORY( transformator )
 ADD_SUBDIRECTORY( viz_zbik3d )

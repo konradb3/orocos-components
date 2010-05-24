@@ -26,20 +26,19 @@
 #include <ocl/ComponentLoader.hpp>
 #include <messip_dataport.h>
 
-#include "edp_irp6ot.h"
+#include "edp_proxy_irp6.h"
 
 #define MOTION_STEPS 10
-#define IRP6OT_NUM_AXES 7
-
 
 namespace orocos_test
 {
-edp_irp6ot::edp_irp6ot(std::string name) :
-	TaskContext(name), control_mode_prop("mode", "operation mode : 0 joint 1 cartesian", 0), cmdJntPos_port("cmdJntPos"),
+edp_proxy_irp6::edp_proxy_irp6(std::string name) :
+	TaskContext(name, PreOperational), control_mode_prop("mode", "operation mode : 0 joint 1 cartesian", 0), cmdJntPos_port("cmdJntPos"),
 			cmdCartPos_port("cmdCartPos"), msrJntPos_port("msrJntPos"),
 			msrCartPos_port("msrCartPos"),
 			mrrocpp_path_prop("mrrocpp_path", "path to mrrocpp bin", "/home/konrad/mrrocpp/bin/"),
-			number_of_axes("IRP6OT_NUM_AXES", IRP6OT_NUM_AXES), msrJntPos(IRP6OT_NUM_AXES)
+			net_attach_point_prop("net_attach_point", "attach point to edp", ""),
+			number_of_axes_prop("number_of_axes", "", 7)
 {
 	this->ports()->addPort(&cmdJntPos_port);
 	this->ports()->addPort(&msrJntPos_port);
@@ -48,20 +47,24 @@ edp_irp6ot::edp_irp6ot(std::string name) :
 
 	this->attributes()->addProperty(&control_mode_prop);
 	this->attributes()->addProperty(&mrrocpp_path_prop);
+	this->attributes()->addProperty(&net_attach_point_prop);
+	this->attributes()->addProperty(&number_of_axes_prop);
 
-	this->attributes()->addConstant(&number_of_axes);
-
-	edp_net_attach_point = "irp6_on_track";
 	program_name = "edp_irp6ot_m";
 }
 
-bool edp_irp6ot::configureHook()
+bool edp_proxy_irp6::configureHook()
 {
 	mrrocpp_path = mrrocpp_path_prop.get();
+	edp_net_attach_point = net_attach_point_prop.get();
+	number_of_axes = number_of_axes_prop.get();
+
+	msrJntPos.resize(number_of_axes);
+
 	return true;
 }
 
-bool edp_irp6ot::startHook()
+bool edp_proxy_irp6::startHook()
 {
 	spawnEDP();
 
@@ -91,7 +94,7 @@ bool edp_irp6ot::startHook()
 	send();
 	query();
 
-	for (unsigned int i = 0; i < IRP6OT_NUM_AXES; i++)
+	for (unsigned int i = 0; i < number_of_axes; i++)
 		msrJntPos[i] = reply_package.arm.pf_def.arm_coordinates[i];
 	msrJntPos_port.Set(msrJntPos);
 	cmdJntPos_port.Set(msrJntPos);
@@ -99,7 +102,7 @@ bool edp_irp6ot::startHook()
 	return true;
 }
 
-void edp_irp6ot::updateHook()
+void edp_proxy_irp6::updateHook()
 {
 	control_mode = control_mode_prop.get();
 
@@ -113,11 +116,11 @@ void edp_irp6ot::updateHook()
 		ecp_command.instruction.motion_type = mrrocpp::lib::ABSOLUTE;
 		ecp_command.instruction.interpolation_type = mrrocpp::lib::MIM;
 
-		if ((cmdJntPos.size() == 7))
+		if ((cmdJntPos.size() == number_of_axes))
 		{
 			ecp_command.instruction.instruction_type = mrrocpp::lib::SET_GET;
 			//ecp_command.instruction.instruction_type = mrrocpp::lib::GET;
-			for (unsigned int i = 0; i < 7; i++)
+			for (unsigned int i = 0; i < number_of_axes; i++)
 				ecp_command.instruction.arm.pf_def.arm_coordinates[i]
 						= cmdJntPos[i];
 		}
@@ -183,7 +186,7 @@ void edp_irp6ot::updateHook()
 
 	if (control_mode == 0)
 	{
-		for (unsigned int i = 0; i < IRP6OT_NUM_AXES; i++)
+		for (unsigned int i = 0; i < number_of_axes; i++)
 			msrJntPos[i] = reply_package.arm.pf_def.arm_coordinates[i];
 		msrJntPos_port.Set(msrJntPos);
 	}
@@ -212,7 +215,7 @@ void edp_irp6ot::updateHook()
 	this->doTrigger();
 }
 
-void edp_irp6ot::stopHook()
+void edp_proxy_irp6::stopHook()
 {
 	if (EDP_fd)
 	{
@@ -220,16 +223,16 @@ void edp_irp6ot::stopHook()
 	}
 
 	std::string cmd = "killall -9 " + program_name;
-	system(cmd.c_str());
+	//system(cmd.c_str());
 }
 
-void edp_irp6ot::cleanupHook()
+void edp_proxy_irp6::cleanupHook()
 {
 	std::string cmd = "killall -9 " + program_name;
-	system(cmd.c_str());
+	//system(cmd.c_str());
 }
 
-void edp_irp6ot::spawnEDP()
+void edp_proxy_irp6::spawnEDP()
 {
 	int tmp = 0;
 
@@ -238,7 +241,7 @@ void edp_irp6ot::spawnEDP()
 			+ " [edp_irp6_on_track] &";
 
 	std::cout << cmd << std::endl;
-	system(cmd.c_str());
+	//system(cmd.c_str());
 	//todo : spawn EDP process using RSH
 
 	while ((EDP_fd = messip::port_connect(edp_net_attach_point)) == NULL)
@@ -254,7 +257,7 @@ void edp_irp6ot::spawnEDP()
 	}
 }
 
-void edp_irp6ot::send()
+void edp_proxy_irp6::send()
 {
 	if (messip::port_send(EDP_fd, 0, 0, ecp_command, reply_package) == -1)
 	{
@@ -262,12 +265,12 @@ void edp_irp6ot::send()
 	}
 }
 
-void edp_irp6ot::query()
+void edp_proxy_irp6::query()
 {
 	ecp_command.instruction.instruction_type = mrrocpp::lib::QUERY;
 	send();
 }
 
 }
-ORO_CREATE_COMPONENT( orocos_test::edp_irp6ot )
+ORO_CREATE_COMPONENT( orocos_test::edp_proxy_irp6 )
 ;

@@ -1,6 +1,5 @@
 program test {
 	var int i;
-	do edp_irp6ot.start();
 	set edp_irp6ot.mode = 0;
 	
 	do jnt_generator.start();

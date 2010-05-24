@@ -57,7 +57,7 @@ bool CirclePosGenerator::startHook()
 
 void CirclePosGenerator::updateHook()
 {
-	cmdCartPos = start * KDL::Frame(KDL::Vector(0,(cos(step * 0.01) - 1.0) * 0.1,sin(step * 0.01) * 0.1));
+	cmdCartPos = start * KDL::Frame(KDL::Vector(0,(cos(step * 0.001) - 1.0) * 0.1,sin(step * 0.001) * 0.1));
 	++step;
 	cmdCartPos_port.Set(cmdCartPos);
 }
