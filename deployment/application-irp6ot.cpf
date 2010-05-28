@@ -20,13 +20,13 @@
      ...
   -->
 
-  <simple name="Import" type="string"><value>/usr/local/lib/rtt/gnulinux/plugins/liborocos-kdltk-gnulinux</value></simple>
-  <simple name="Import" type="string"><value>/usr/local/lib/liborocos-naxes-gnulinux.so</value></simple>
+  <simple name="Import" type="string"><value>/usr/lib/rtt/gnulinux/plugins/liborocos-kdltk-gnulinux</value></simple>
+  <simple name="Import" type="string"><value>/usr/lib/liborocos-naxes-gnulinux.so</value></simple>
   <simple name="Import" type="string"><value>components/edp_irp6ot</value></simple>
   <simple name="Import" type="string"><value>components/CirclePosGenerator</value></simple>
 
 <!-- EDP's -->
-  <struct name="edp_irp6ot" type="orocos_test::edp_proxy_irp6">
+  <struct name="edp_irp6ot" type="orocos_test::EdpProxyIRP6">
     	<struct name="Activity" type="NonPeriodicActivity">
       		<simple name="Priority" type="short"><value>50</value></simple>
     		<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
@@ -35,7 +35,7 @@
     	<simple name="AutoStart" type="boolean"><value>0</value></simple>
     	
     	<struct name="Properties" type="PropertyBag">
-      		<simple name="net_attach_point" type="string"><value>irp6_on_track</value></simple>
+      		<simple name="net_attach_point" type="string"><value>irp6ot_m</value></simple>
       		<simple name="number_of_axes" type="int"><value>7</value></simple>
     	</struct>
     	
@@ -47,7 +47,7 @@
       		<simple name="cmdCartPos" type="string"><value>cmdCartPos </value></simple>
     	</struct>
   </struct>
-
+<!--
   <struct name="jnt_generator" type="OCL::nAxesGeneratorPos">
     	<struct name="Activity" type="Activity">
     	    <simple name="Period" type="double"><value>0.005</value></simple>
@@ -59,7 +59,7 @@
     	
     	<simple name="PropertyFile" type="string"><value>deployment/nAxesGeneratorPos.cpf</value></simple>
     	
-    	<!-- List all peers (uni-directional) -->
+    
     	<struct name="Ports" type="PropertyBag">
       		<simple name="nAxesSensorPosition" type="string"><value>CurPosition_irp6ot </value></simple>
       		<simple name="nAxesDesiredPosition" type="string"><value>Setpoint_irp6ot </value></simple>
@@ -75,12 +75,12 @@
     	<simple name="AutoConf" type="boolean"><value>1</value></simple>
     	<simple name="AutoStart" type="boolean"><value>0</value></simple>
     	
-    	<!-- List all peers (uni-directional) -->
+    	
     	<struct name="Ports" type="PropertyBag">
       		<simple name="msrCartPos" type="string"><value>msrCartPos </value></simple>
       		<simple name="cmdCartPos" type="string"><value>cmdCartPos </value></simple>
     	</struct>
   </struct>
   
-  
+  -->
 </properties>

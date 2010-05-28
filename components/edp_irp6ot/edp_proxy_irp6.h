@@ -44,10 +44,10 @@
 
 namespace orocos_test
 {
-class edp_proxy_irp6: public RTT::TaskContext
+class EdpProxyIRP6: public RTT::TaskContext
 {
 public:
-	edp_proxy_irp6(std::string name);
+	EdpProxyIRP6(std::string name);
 	/**
 	 * This function is for the configuration code.
 	 * Return false to abort configuration.
@@ -101,6 +101,7 @@ private:
 
 	mrrocpp::lib::ecp_command_buffer ecp_command;
 	mrrocpp::lib::r_buffer reply_package;
+	char flkdk[10000];
 	messip_channel_t *EDP_fd;
 	std::string edp_net_attach_point;
 
@@ -108,6 +109,8 @@ private:
 	std::string mrrocpp_path;
 
 	bool init;
+
+	uint64_t t1, t2, tmin, tmax, tavg, t;
 
 	void spawnEDP();
 	void send();

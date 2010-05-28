@@ -23,27 +23,36 @@
 #ifndef __COM_BUF_H
 #define __COM_BUF_H
 
-//#include "lib/typedefs.h"
+#define USE_MESSIP_SRR
 
-
-#define MAX_SERVOS_NR 8
-
+#if defined(USE_MESSIP_SRR)
 #include <messip.h>
-
+#endif
 
 #include <boost/serialization/serialization.hpp>
 
 namespace mrrocpp {
 namespace lib {
 
+#define MAX_TEXT 100 // MAC7
+#define MAX_PROSODY 20 // MAC7
+#define CONNECT_RETRY	200
+#define CONNECT_DELAY	50
+
+// ----------------------- PRZYDATNE STALE ---------------------------
 typedef double frame_tab[3][4];
+
+#ifndef ABS
+#define ABS(x) (((x)<0)?-(x):(x))   // wartosc bezwzgledna 'x'
+#endif
+
+#define MP_SECTION "[mp]"
+#define UI_SECTION "[ui]"
 
 typedef enum _ROBOT_ENUM {
 	ROBOT_UNDEFINED,
-	ROBOT_IRP6_ON_TRACK,
 	ROBOT_IRP6OT_TFG,
 	ROBOT_IRP6OT_M,
-	ROBOT_IRP6_POSTUMENT,
 	ROBOT_IRP6P_TFG,
 	ROBOT_IRP6P_M,
 	ROBOT_CONVEYOR,
@@ -57,8 +66,21 @@ typedef enum _ROBOT_ENUM {
 	ROBOT_SMB,
 	ROBOT_SPKM,
 	ROBOT_SHEAD,
-	ROBOT_BIRD_HAND // three finger Krzysztof Mianowski gripper 2010
+	ROBOT_BIRD_HAND
+// three finger Krzysztof Mianowski gripper 2010
 } robot_name_t;
+
+enum FORCE_SENSOR_ENUM {
+	FORCE_SENSOR_ATI3084, FORCE_SENSOR_ATI6284
+};
+
+#define MAX_SERVOS_NR 8
+
+#define HAND_NUM_OF_SERVOS		2
+
+#define TIME_SLICE 500000 // by Y
+#define STEP              0.002  // Krok sterowania w [s]
+
 
 #define ECP_EDP_SERIALIZED_COMMAND_SIZE 1000
 #define EDP_ECP_SERIALIZED_REPLY_SIZE 1000
@@ -98,153 +120,6 @@ enum ECP_POSE_SPECIFICATION {
 	ECP_JOINT,
 	ECP_MOTOR,
 	ECP_PF_VELOCITY
-};
-
-//------------------------------------------------------------------------------
-/*!
- *  Reply types from UI to ECP and commands from UI (pressing a button).
- */
-enum UI_TO_ECP_COMMAND {
-	INVALID_REPLY,
-	NEXT,
-	QUIT,
-	ANSWER_YES,
-	ANSWER_NO,
-	FILE_LOADED,
-	FILE_SAVED,
-
-	/*! Commands from Force Control window. */
-	FC_ADD_MACROSTEP,
-	FC_CALIBRATE_SENSOR,
-	FC_CHANGE_CONTROL,
-	FC_MOVE_ROBOT,
-	FC_SAVE_TRAJECTORY,
-	FC_NEW_TRAJECTORY,
-	FC_EXIT,
-	FC_GET_DATA,
-
-	/*! Commands from Trajectory Render window. */
-	TR_LOAD_TRAJECTORY,
-	TR_PAUSE_MOVE,
-	TR_START_MOVE,
-	TR_STOP_MOVE,
-	TR_EXIT,
-	TR_ZERO_POSITION,
-	TR_SAVE_READINGS,
-	TR_CALIBRATE_DIGITAL_SCALES_SENSOR,
-	TR_CALIBRATE_FORCE_SENSOR,
-	TR_TRY_MOVE_AGAIN,
-
-	/*! Replies from the options window. */
-	OPTION_ONE,
-	OPTION_TWO,
-	OPTION_THREE,
-	OPTION_FOUR,
-
-	/*!
-	 *  Commands from the window
-	 *  MAM_wnd_manual_moves_automatic_measures.
-	 */
-	MAM_START,
-	MAM_STOP,
-	MAM_CLEAR,
-	MAM_SAVE,
-	MAM_EXIT,
-	MAM_CALIBRATE
-};
-
-//------------------------------------------------------------------------------
-/*!
- *  Types of ECP to UI commands.
- */
-enum ECP_TO_UI_COMMAND {
-	C_INVALID_END_EFFECTOR,
-	C_FRAME,
-	C_XYZ_ANGLE_AXIS,
-	C_XYZ_EULER_ZYZ,
-	C_JOINT,
-	C_MOTOR,
-	YES_NO,
-	DOUBLE_NUMBER,
-	INTEGER_NUMBER,
-	SAVE_FILE,
-	LOAD_FILE,
-	MESSAGE,
-	OPEN_FORCE_SENSOR_MOVE_WINDOW,
-	OPEN_TRAJECTORY_REPRODUCE_WINDOW,
-	TR_REFRESH_WINDOW,
-	TR_DANGEROUS_FORCE_DETECTED,
-	CHOOSE_OPTION,
-	MAM_OPEN_WINDOW,
-	MAM_REFRESH_WINDOW
-};
-
-//------------------------------------------------------------------------------
-/*! Length of a message sent from ECP to MP or UI */
-#define MSG_LENGTH 60
-
-//------------------------------------------------------------------------------
-/*!
- *  ECP to UI message.
- */
-struct ECP_message {
-	/*! Type of message. */
-	ECP_TO_UI_COMMAND ecp_message;
-	/*! Robot name. */
-	robot_name_t robot_name;
-	/*! Number of options - from 2 to 4 - - for CHOOSE_OPTION mode. */
-	uint8_t nr_of_options;
-
-	//----------------------------------------------------------
-	union {
-		/*! A comment for the command. */
-		char string[MSG_LENGTH];
-
-		//------------------------------------------------------
-		struct {
-			double robot_position[MAX_SERVOS_NR];
-			double sensor_reading[MAX_SERVOS_NR];
-		}
-		/*! Robot positions + Sensor readings. */
-		RS;
-		//------------------------------------------------------
-		struct {
-			double robot_position[MAX_SERVOS_NR];
-			double digital_scales_sensor_reading[6];
-			double force_sensor_reading[6];
-		}
-		/*! Robot positions + 2 * (Sensor readings). */
-		R2S;
-		//------------------------------------------------------
-		struct {
-			double robot_position[MAX_SERVOS_NR];
-			double sensor_reading[6];
-			int measure_number;
-		}
-		/*! Robot positions + Sensor readings + Measure number. */
-		MAM;
-	};
-};
-
-
-//------------------------------------------------------------------------------
-/*!
- *  Message from UI to ECP.
- */
-struct UI_ECP_message {
-
-	UI_TO_ECP_COMMAND command;
-
-	union {
-		/*! The name of the file. */
-		char filename[100];
-		/*! Time of the robot's motion. */
-		int motion_time;
-		/*! (axis - 1..6) && (+/- left/right). */
-		short move_type;
-		/*! Change of control type. */
-		POSE_SPECIFICATION ps;
-	};
 };
 
 //------------------------------------------------------------------------------
@@ -557,63 +432,9 @@ enum SERVO_COMMAND {
 };
 
 //------------------------------------------------------------------------------
-/*! Structure of a command from EDP_MASTER to SERVO_GROUP. */
-struct edp_master_command {
-	/*! Code for the instruction sent to SERVO_GROUP. */
-	SERVO_COMMAND instruction_code;
-	union {
-		//------------------------------------------------------
-		struct {
-			/*! Number of steps for a macrostep. */
-			uint16_t number_of_steps;
-			/*!
-			 *  Number of steps after which the information about the previously
-			 *  realized position is to be sent.
-			 *  Information is sent to EDP_MASTER using READING_BUFFER.
-			 *  After k steps SERVO has the position from the k-1 step.
-			 */
-			uint16_t return_value_in_step_no;
-			/*! Length of a macrostep (given value of a macrostep - increase). */
-			double macro_step[MAX_SERVOS_NR];
-			/*! Given absolute position at the end of a macrostep. */
-			double abs_position[MAX_SERVOS_NR];
-		} move;
-		//------------------------------------------------------
-		struct {
-			/*! Servo algorithm numbers. */
-			uint8_t servo_algorithm_no[MAX_SERVOS_NR];
-			/*! Numbers fo servo algorithm parameters set. */
-			uint8_t servo_parameters_no[MAX_SERVOS_NR];
-		} servo_alg_par;
-
-	} parameters;
-};
-
-//------------------------------------------------------------------------------
-/*! Structure of a reply from SERVO_GROUP to EDP_MASTER. */
-struct servo_group_reply {
-	/*! Error code. */
-	edp_error error;
-	/*! Position increment of the motor shaft reached since the last reading. */
-	double position[MAX_SERVOS_NR];
-	/*! Absolute position of the joints (in radians). */
-	double abs_position[MAX_SERVOS_NR];
-	/*! Given values for PWM fill (Phase Wave Modulation) - (usualy unnecessary). */
-	int16_t PWM_value[MAX_SERVOS_NR];
-	/*! Control current - (usualy unnecessary). */
-	int16_t current[MAX_SERVOS_NR];
-	/*! Numbers for the regulation algorithms in use. */
-	uint8_t algorithm_no[MAX_SERVOS_NR];
-	uint8_t algorithm_parameters_no[MAX_SERVOS_NR];
-	/*! Gripper regulator state. */
-	short gripper_reg_state;
-};
-
-//------------------------------------------------------------------------------
 //                                  c_buffer
 //------------------------------------------------------------------------------
-#define MAX_TEXT 100 // MAC7
-#define MAX_PROSODY 20 // MAC7
+
 
 //------------------------------------------------------------------------------
 /*! robot_model */
@@ -657,8 +478,6 @@ typedef union c_buffer_arm {
 		double inertia[6], reciprocal_damping[6];
 		double force_xyz_torque_xyz[6];
 		BEHAVIOUR_SPECIFICATION behaviour[6];
-		/*! Dilation degree of the gripper. */
-		double gripper_coordinate;
 	} pf_def;
 	//----------------------------------------------------------
 	struct {
@@ -723,29 +542,6 @@ struct c_buffer {
 	uint16_t value_in_step_no;
 	c_buffer_robot_model_t robot_model;
 	c_buffer_arm_t arm;
-
-	//-----------------------------------------------------
-	//                      METHODS
-	//-----------------------------------------------------
-
-	//! Give access to boost::serialization framework
-	friend class boost::serialization::access;
-
-	//! Serialization of the data structure
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version) {
-		ar & instruction_type;
-		ar & set_type;
-		ar & get_type;
-		ar & set_robot_model_type;
-		ar & get_robot_model_type;
-		ar & set_arm_type;
-		ar & get_arm_type;
-		ar & output_values;
-		ar & interpolation_type;
-		ar & motion_type;
-		ar & motion_steps;
-	}
 
 };
 
@@ -840,11 +636,6 @@ typedef union r_buffer_arm {
 		 *  @todo Translate to English.
 		 */
 		short gripper_reg_state;
-		/*!
-		 *  Stopien rozwarcia chwytaka.
-		 *  @todo Translate to English.
-		 */
-		double gripper_coordinate;
 	} pf_def;
 	//----------------------------------------------------------
 	struct {
@@ -884,7 +675,7 @@ struct r_buffer {
 	uint8_t analog_input[8];
 	controller_state_t controller_state;
 	/*! Number of the servo step. */
-	unsigned long servo_step;
+	uint32_t servo_step;
 	/*! Given values for PWM fill (Phase Wave Modulation) - (usualy unnecessary). */
 	int16_t PWM_value[MAX_SERVOS_NR];
 	/*! Control current - (usualy unnecessary). */
@@ -915,34 +706,20 @@ public:
 
 //------------------------------------------------------------------------------
 struct ecp_command_buffer {
+#ifndef USE_MESSIP_SRR
+	/*! This is a message buffer, so it needs a message header */
+	msg_header_t hdr;
+#endif
 	c_buffer instruction;
 };
+
+
 
 //------------------------------------------------------------------------------
 #ifndef SPEECH_RECOGNITION_TEXT_LEN
 #define SPEECH_RECOGNITION_TEXT_LEN 256
 #endif
 
-//------------------------------------------------------------------------------
-/*! ECP to MP reply. */
-struct ECP_REPLY_PACKAGE {
-	ECP_REPLY reply;
-
-	// TODO: this should be rather union, but it is not possible to union non-POD objects
-	r_buffer reply_package;
-	char commandRecognized[SPEECH_RECOGNITION_TEXT_LEN];
-};
-// ------------------------------------------------------------------------
-
-/*
- // by Y
- inline void copy_frame(frame_tab destination_frame, frame_tab source_frame)
- {
- for (int   column = 0; column < 4; column++)
- for (int row = 0; row < 3; row++)
- destination_frame[column][row] = source_frame[column][row];
- }
- */
 
 } // namespace lib
 } // namespace mrrocpp

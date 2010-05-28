@@ -25,6 +25,7 @@
 
 #include <ocl/ComponentLoader.hpp>
 #include <messip_dataport.h>
+#include <time.h>
 
 #include "edp_proxy_irp6.h"
 
@@ -32,7 +33,7 @@
 
 namespace orocos_test
 {
-edp_proxy_irp6::edp_proxy_irp6(std::string name) :
+EdpProxyIRP6::EdpProxyIRP6(std::string name) :
 	TaskContext(name, PreOperational), control_mode_prop("mode", "operation mode : 0 joint 1 cartesian", 0), cmdJntPos_port("cmdJntPos"),
 			cmdCartPos_port("cmdCartPos"), msrJntPos_port("msrJntPos"),
 			msrCartPos_port("msrCartPos"),
@@ -53,7 +54,7 @@ edp_proxy_irp6::edp_proxy_irp6(std::string name) :
 	program_name = "edp_irp6ot_m";
 }
 
-bool edp_proxy_irp6::configureHook()
+bool EdpProxyIRP6::configureHook()
 {
 	mrrocpp_path = mrrocpp_path_prop.get();
 	edp_net_attach_point = net_attach_point_prop.get();
@@ -64,10 +65,11 @@ bool edp_proxy_irp6::configureHook()
 	return true;
 }
 
-bool edp_proxy_irp6::startHook()
+bool EdpProxyIRP6::startHook()
 {
 	spawnEDP();
 
+	t1 = 0;
 	init = false;
 	control_mode = 0;
 
@@ -102,13 +104,12 @@ bool edp_proxy_irp6::startHook()
 	return true;
 }
 
-void edp_proxy_irp6::updateHook()
+void EdpProxyIRP6::updateHook()
 {
 	control_mode = control_mode_prop.get();
 
 	if (control_mode == 0)
 	{
-		log(RTT::Info) << "control mode 0" << RTT::endlog();
 		cmdJntPos_port.Get(cmdJntPos);
 
 		ecp_command.instruction.set_arm_type = mrrocpp::lib::JOINT;
@@ -119,7 +120,6 @@ void edp_proxy_irp6::updateHook()
 		if ((cmdJntPos.size() == number_of_axes))
 		{
 			ecp_command.instruction.instruction_type = mrrocpp::lib::SET_GET;
-			//ecp_command.instruction.instruction_type = mrrocpp::lib::GET;
 			for (unsigned int i = 0; i < number_of_axes; i++)
 				ecp_command.instruction.arm.pf_def.arm_coordinates[i]
 						= cmdJntPos[i];
@@ -183,6 +183,27 @@ void edp_proxy_irp6::updateHook()
 
 	send();
 	query();
+	struct timespec ts;
+	if(clock_gettime(CLOCK_MONOTONIC, &ts) == -1)
+		log(RTT::Error) << "clock_gettime error" << RTT::endlog();
+
+	t2 = (uint64_t)ts.tv_sec * 1000 + (uint64_t)ts.tv_nsec/1000;
+	if(t1 != 0)
+	{
+		t = t2 -t1;
+		t1 = t2;
+		if(tmax < t)
+			tmax = t;
+		if(tmin > t)
+			tmin = t;
+		tavg = (tavg + t)/2;
+
+		log(RTT::Info) << "10 steps in : " << t << " tmax :  " << tmax << " tmin : " << tmin << " tavg : " << tavg << RTT::endlog();
+
+	}	else
+	{
+		t1 = t2;
+	}
 
 	if (control_mode == 0)
 	{
@@ -215,7 +236,7 @@ void edp_proxy_irp6::updateHook()
 	this->doTrigger();
 }
 
-void edp_proxy_irp6::stopHook()
+void EdpProxyIRP6::stopHook()
 {
 	if (EDP_fd)
 	{
@@ -226,13 +247,13 @@ void edp_proxy_irp6::stopHook()
 	//system(cmd.c_str());
 }
 
-void edp_proxy_irp6::cleanupHook()
+void EdpProxyIRP6::cleanupHook()
 {
 	std::string cmd = "killall -9 " + program_name;
 	//system(cmd.c_str());
 }
 
-void edp_proxy_irp6::spawnEDP()
+void EdpProxyIRP6::spawnEDP()
 {
 	int tmp = 0;
 
@@ -257,20 +278,20 @@ void edp_proxy_irp6::spawnEDP()
 	}
 }
 
-void edp_proxy_irp6::send()
+void EdpProxyIRP6::send()
 {
 	if (messip::port_send(EDP_fd, 0, 0, ecp_command, reply_package) == -1)
 	{
-		log(RTT::Error) << "messip send error" << RTT::endlog();
+		log(RTT::Error) << "messip send error" << strerror(errno)  << RTT::endlog();
 	}
 }
 
-void edp_proxy_irp6::query()
+void EdpProxyIRP6::query()
 {
 	ecp_command.instruction.instruction_type = mrrocpp::lib::QUERY;
 	send();
 }
 
 }
-ORO_CREATE_COMPONENT( orocos_test::edp_proxy_irp6 )
+ORO_CREATE_COMPONENT( orocos_test::EdpProxyIRP6 )
 ;
