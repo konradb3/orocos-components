@@ -110,7 +110,7 @@ private:
 
 	bool init;
 
-	uint64_t t1, t2, tmin, tmax, tavg, t;
+	int64_t t1, t2, tmin, tmax, tavg, t;
 
 	void spawnEDP();
 	void send();

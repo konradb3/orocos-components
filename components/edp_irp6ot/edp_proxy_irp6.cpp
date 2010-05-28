@@ -187,21 +187,25 @@ void EdpProxyIRP6::updateHook()
 	if(clock_gettime(CLOCK_MONOTONIC, &ts) == -1)
 		log(RTT::Error) << "clock_gettime error" << RTT::endlog();
 
-	t2 = (uint64_t)ts.tv_sec * 1000 + (uint64_t)ts.tv_nsec/1000;
+	t2 = (uint64_t)ts.tv_sec * 1000000000 + (uint64_t)ts.tv_nsec;
 	if(t1 != 0)
 	{
-		t = t2 -t1;
-		t1 = t2;
-		if(tmax < t)
-			tmax = t;
-		if(tmin > t)
-			tmin = t;
-		tavg = (tavg + t)/2;
+		int64_t diff;
+		t1 += 20000000;
+		diff = t1 - t2;
+		if(tmax < diff)
+			tmax = diff;
+		if(tmin > diff)
+			tmin = diff;
+		tavg = (tavg + diff)/2;
 
-		log(RTT::Info) << "10 steps in : " << t << " tmax :  " << tmax << " tmin : " << tmin << " tavg : " << tavg << RTT::endlog();
+		log(RTT::Info) << "10 steps in : " << diff << " tmax :  " << tmax << " tmin : " << tmin << " tavg : " << tavg << RTT::endlog();
 
 	}	else
 	{
+		tavg = 0;
+		tmax = 0;
+		tmin = 0;
 		t1 = t2;
 	}
 
