@@ -76,7 +76,7 @@ public:
 
 protected:
 
-	RTT::Property<int> control_mode_prop;
+
 
 	RTT::DataPort<std::vector<double> > cmdJntPos_port;
 	RTT::DataPort<KDL::Frame> cmdCartPos_port;
@@ -84,6 +84,10 @@ protected:
 	RTT::DataPort<std::vector<double> > msrJntPos_port;
 	RTT::DataPort<KDL::Frame> msrCartPos_port;
 
+	RTT::DataPort<KDL::Wrench> cmdWrench_port;
+	RTT::DataPort<KDL::Wrench> msrWrench_port;
+
+	RTT::Property<int> control_mode_prop;
 	RTT::Property<std::string> mrrocpp_path_prop;
 	RTT::Property<std::string> net_attach_point_prop;
 
@@ -94,6 +98,8 @@ private:
 
 	KDL::Frame cmdCartPos;
 	KDL::Frame msrCartPos;
+
+	std::vector<RTT::TaskContext*> peers;
 
 	unsigned int number_of_axes;
 
@@ -107,10 +113,6 @@ private:
 
 	std::string program_name;
 	std::string mrrocpp_path;
-
-	bool init;
-
-	int64_t t1, t2, tmin, tmax, tavg, t;
 
 	void spawnEDP();
 	void send();

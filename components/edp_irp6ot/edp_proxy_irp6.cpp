@@ -34,9 +34,11 @@
 namespace orocos_test
 {
 EdpProxyIRP6::EdpProxyIRP6(const std::string & name) :
-	TaskContext(name, PreOperational), control_mode_prop("mode", "operation mode : 0 joint 1 cartesian", 0), cmdJntPos_port("cmdJntPos"),
+	TaskContext(name, PreOperational),  cmdJntPos_port("cmdJntPos"),
 			cmdCartPos_port("cmdCartPos"), msrJntPos_port("msrJntPos"),
-			msrCartPos_port("msrCartPos"),
+			msrCartPos_port("msrCartPos"), cmdWrench_port("cmdWrench"),
+			msrWrench_port("msrWrench"),
+			control_mode_prop("mode", "operation mode : 0 joint 1 cartesian", 0),
 			mrrocpp_path_prop("mrrocpp_path", "path to mrrocpp bin", "/home/konrad/mrrocpp/bin/"),
 			net_attach_point_prop("net_attach_point", "attach point to edp", ""),
 			number_of_axes_prop("number_of_axes", "dsffgdfg ", 6)
@@ -45,6 +47,8 @@ EdpProxyIRP6::EdpProxyIRP6(const std::string & name) :
 	this->ports()->addPort(&msrJntPos_port);
 	this->ports()->addPort(&cmdCartPos_port);
 	this->ports()->addPort(&msrCartPos_port);
+	this->ports()->addPort(&cmdWrench_port);
+	this->ports()->addPort(&msrWrench_port);
 
 	this->attributes()->addProperty(&control_mode_prop);
 	this->attributes()->addProperty(&mrrocpp_path_prop);
@@ -62,6 +66,11 @@ bool EdpProxyIRP6::configureHook()
 
 	msrJntPos.resize(number_of_axes);
 
+	PeerList peerList = this->getPeerList();
+	PeerList::iterator it;
+	for ( it=peerList.begin() ; it < peerList.end(); it++ )
+		peers.push_back(this->getPeer(*it));
+
 	return true;
 }
 
@@ -69,8 +78,6 @@ bool EdpProxyIRP6::startHook()
 {
 	spawnEDP();
 
-	t1 = 0;
-	init = false;
 	control_mode = 0;
 
 	ecp_command.instruction.instruction_type = mrrocpp::lib::GET;
@@ -195,41 +202,6 @@ void EdpProxyIRP6::updateHook()
 
 	send();
 	query();
-	struct timespec ts;
-	if(clock_gettime(CLOCK_REALTIME, &ts) == -1)
-		log(RTT::Error) << "clock_gettime error" << RTT::endlog();
-
-	t2 = (uint64_t)ts.tv_sec * 1e9 + (uint64_t)ts.tv_nsec;
-	if(t1 != 0)
-	{
-		int64_t diff;
-		t1 += 20000000;
-		diff = t1 - t2;
-		if(tmax < diff)
-			tmax = diff;
-		if(tmin > diff)
-			tmin = diff;
-		tavg = (tavg + diff)/2;
-
-		log(RTT::Info) << "10 steps in : " << diff << " tmax :  " << tmax << " tmin : " << tmin << " tavg : " << tavg << RTT::endlog();
-
-	/*	if(diff >= 4000000)
-		{
-			ecp_command.instruction.motion_steps = MOTION_STEPS - 1;
-			ecp_command.instruction.value_in_step_no = MOTION_STEPS - 4;
-		}	else
-		{
-			ecp_command.instruction.motion_steps = MOTION_STEPS;
-			ecp_command.instruction.value_in_step_no = MOTION_STEPS - 3;
-		}*/
-
-	}	else
-	{
-		tavg = 0;
-		tmax = 0;
-		tmin = 0;
-		t1 = t2;
-	}
 
 	if (control_mode == 0)
 	{
@@ -258,6 +230,11 @@ void EdpProxyIRP6::updateHook()
 		msrCartPos_port.Set(msrCartPos);
 
 	}
+
+	std::vector<RTT::TaskContext*>::iterator it;
+	for ( it=peers.begin() ; it < peers.end(); it++ )
+		(*it)->doUpdate();
+
 
 	this->doTrigger();
 }

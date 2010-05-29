@@ -1,12 +1,12 @@
 program test {
 	var int i;
-	set edp_irp6p.mode = 0;
+	set edp_irp6ot.mode = 0;
 	
 	do jnt_generator.start();
-	do jnt_generator.moveTo(array(0.000000, -1.570000, 0.000000, 1.560000, 1.570000, -1.570000), 5);
+	do jnt_generator.moveTo(array(0.000000, 0.000000, -1.570000, 0.000000, 1.560000, 1.570000, -1.570000), 5);
 	do jnt_generator.stop();
 	
-	set edp_irp6p.mode = 1;
+	set edp_irp6ot.mode = 1;
 	
 	do nothing
 	do nothing
@@ -16,12 +16,12 @@ program test {
 	for(set i = 0; i < 300; set i = i + 1)
 		do nothing
 	do circle_generator.stop();
-	set edp_irp6p.mode = 0;
+	set edp_irp6ot.mode = 0;
 	
 	do nothing
 	do nothing
 	
 	do jnt_generator.start();
-	do jnt_generator.moveTo(array(-0.087462, -1.54187, 0.0240635, 1.21873, 4.17322, -2.66439), 6);
+	do jnt_generator.moveTo(array(0.000000, -0.087462, -1.54187, 0.0240635, 1.21873, 4.17322, -2.66439), 6);
 	do jnt_generator.stop();
 }
