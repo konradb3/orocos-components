@@ -33,13 +33,13 @@
 
 namespace orocos_test
 {
-EdpProxyIRP6::EdpProxyIRP6(std::string name) :
+EdpProxyIRP6::EdpProxyIRP6(const std::string & name) :
 	TaskContext(name, PreOperational), control_mode_prop("mode", "operation mode : 0 joint 1 cartesian", 0), cmdJntPos_port("cmdJntPos"),
 			cmdCartPos_port("cmdCartPos"), msrJntPos_port("msrJntPos"),
 			msrCartPos_port("msrCartPos"),
 			mrrocpp_path_prop("mrrocpp_path", "path to mrrocpp bin", "/home/konrad/mrrocpp/bin/"),
 			net_attach_point_prop("net_attach_point", "attach point to edp", ""),
-			number_of_axes_prop("number_of_axes", "", 7)
+			number_of_axes_prop("number_of_axes", "dsffgdfg ", 6)
 {
 	this->ports()->addPort(&cmdJntPos_port);
 	this->ports()->addPort(&msrJntPos_port);
@@ -84,8 +84,17 @@ bool EdpProxyIRP6::startHook()
 		log(RTT::Info) << "robot is synchronized" << RTT::endlog();
 	}
 	else
-		return false;
+	{
+		log(RTT::Error) << "robot is not synchronized" << RTT::endlog();
 
+		ecp_command.instruction.instruction_type = mrrocpp::lib::SYNCHRO;
+
+		send(); // Wyslanie zlecenia synchronizacji
+		query(); // Odebranie wyniku zlecenia
+
+		if(!(reply_package.reply_type == mrrocpp::lib::SYNCHRO_OK))
+			return false;
+	}
 	ecp_command.instruction.set_type = ARM_DEFINITION;
 	ecp_command.instruction.get_type = ARM_DEFINITION;
 	ecp_command.instruction.motion_steps = MOTION_STEPS;
@@ -131,7 +140,6 @@ void EdpProxyIRP6::updateHook()
 	}
 	else if (control_mode == 1)
 	{
-		log(RTT::Info) << "control mode 1" << RTT::endlog();
 		ecp_command.instruction.set_arm_type = mrrocpp::lib::FRAME;
 		ecp_command.instruction.get_arm_type = mrrocpp::lib::FRAME;
 		ecp_command.instruction.motion_type = mrrocpp::lib::ABSOLUTE;
@@ -140,8 +148,12 @@ void EdpProxyIRP6::updateHook()
 
 		cmdCartPos_port.Get(tmp);
 
+
 		if (tmp != KDL::Frame::Identity())
 		{
+			if(tmp == cmdCartPos)
+				log(RTT::Error) << "pasive loop !!" << RTT::endlog();
+
 			cmdCartPos = tmp;
 
 			ecp_command.instruction.arm.pf_def.arm_frame[0][0]
@@ -184,10 +196,10 @@ void EdpProxyIRP6::updateHook()
 	send();
 	query();
 	struct timespec ts;
-	if(clock_gettime(CLOCK_MONOTONIC, &ts) == -1)
+	if(clock_gettime(CLOCK_REALTIME, &ts) == -1)
 		log(RTT::Error) << "clock_gettime error" << RTT::endlog();
 
-	t2 = (uint64_t)ts.tv_sec * 1000000000 + (uint64_t)ts.tv_nsec;
+	t2 = (uint64_t)ts.tv_sec * 1e9 + (uint64_t)ts.tv_nsec;
 	if(t1 != 0)
 	{
 		int64_t diff;
@@ -200,6 +212,16 @@ void EdpProxyIRP6::updateHook()
 		tavg = (tavg + diff)/2;
 
 		log(RTT::Info) << "10 steps in : " << diff << " tmax :  " << tmax << " tmin : " << tmin << " tavg : " << tavg << RTT::endlog();
+
+	/*	if(diff >= 4000000)
+		{
+			ecp_command.instruction.motion_steps = MOTION_STEPS - 1;
+			ecp_command.instruction.value_in_step_no = MOTION_STEPS - 4;
+		}	else
+		{
+			ecp_command.instruction.motion_steps = MOTION_STEPS;
+			ecp_command.instruction.value_in_step_no = MOTION_STEPS - 3;
+		}*/
 
 	}	else
 	{

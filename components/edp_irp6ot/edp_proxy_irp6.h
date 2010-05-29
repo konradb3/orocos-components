@@ -47,7 +47,7 @@ namespace orocos_test
 class EdpProxyIRP6: public RTT::TaskContext
 {
 public:
-	EdpProxyIRP6(std::string name);
+	EdpProxyIRP6(const std::string &name);
 	/**
 	 * This function is for the configuration code.
 	 * Return false to abort configuration.
