@@ -74,18 +74,19 @@ public:
 	 */
 	void cleanupHook();
 protected:
-	RTT::DataPort<KDL::Twist> velocitySetpoint_port;
-	RTT::DataPort<KDL::Twist> velocity_port;
-	RTT::DataPort<KDL::Frame> position_port;
+
+	RTT::ReadDataPort<KDL::Twist> cmdVel_port;
+	RTT::WriteDataPort<KDL::Twist> msrVel_port;
+	RTT::WriteDataPort<KDL::Frame> msrPos_port;
 	RTT::Property<std::string> port_prop;
 private:
 
 	Protonek protonek;
 	std::string port_name;
 
-	KDL::Twist velocitySetpoint;
-	KDL::Twist velocity;
-	KDL::Frame position;
+	KDL::Twist cmdVel;
+	KDL::Twist msrVel;
+	KDL::Frame msrPos;
 };
 
 }

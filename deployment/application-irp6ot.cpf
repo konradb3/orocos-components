@@ -36,7 +36,7 @@
     	
     	<struct name="Properties" type="PropertyBag">
       		<simple name="net_attach_point" type="string"><value>irp6ot_m</value></simple>
-      		<simple name="number_of_axes" type="int"><value>7</value></simple>
+      		<simple name="number_of_axes" type="uint"><value>7</value></simple>
     	</struct>
     	
     	<!-- List all peers (uni-directional) -->
