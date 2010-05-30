@@ -30,28 +30,28 @@
 namespace orocos_test
 {
 
-Protonek_position::Protonek_position(std::string name) :
+ProtonekPosition::ProtonekPosition(std::string name) :
 	TaskContext(name, PreOperational),
-	cmdVel_port("cmdVel", "Commanded velocity"),
-	msrVel_port("msrVel", "Measured velocity"),
-	msrPos_port("msrPos", "Measured position"),
+	cmdVel_port("cmdVel"),
+	msrVel_port("msrVel"),
+	msrPos_port("msrPos"),
 	port_prop("Device", "UNIX device file (/dev/protonek)")
 {
-	this->ports()->addPort(&cmdVel_port);
-	this->ports()->addPort(&msrVel_port);
-	this->ports()->addPort(&msrPos_port);
+	this->ports()->addPort(&cmdVel_port, "Commanded velocity");
+	this->ports()->addPort(&msrVel_port, "Measured velocity");
+	this->ports()->addPort(&msrPos_port, "Measured position");
 
 	this->properties()->addProperty(&port_prop);
 
 }
 
-bool Protonek_position::configureHook()
+bool ProtonekPosition::configureHook()
 {
 	port_name = port_prop;
 	return true;
 }
 
-bool Protonek_position::startHook()
+bool ProtonekPosition::startHook()
 {
 	if(protonek.connect(port_name.c_str(), 9600) == false)
 	{
@@ -62,7 +62,7 @@ bool Protonek_position::startHook()
 	return true;
 }
 
-void Protonek_position::updateHook()
+void ProtonekPosition::updateHook()
 {
 	double rot;
 
@@ -78,15 +78,15 @@ void Protonek_position::updateHook()
 	msrPos_port.Set(msrPos);
 }
 
-void Protonek_position::stopHook()
+void ProtonekPosition::stopHook()
 {
 	protonek.disconnect();
 }
 
-void Protonek_position::cleanupHook()
+void ProtonekPosition::cleanupHook()
 {
 
 }
 
 }
-ORO_CREATE_COMPONENT( orocos_test::Protonek_position );
+ORO_CREATE_COMPONENT( orocos_test::ProtonekPosition );

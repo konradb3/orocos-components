@@ -1,4 +1,4 @@
-ADD_SUBDIRECTORY( edp_irp6ot )
+ADD_SUBDIRECTORY( EdpProxyIRP6 )
 ADD_SUBDIRECTORY( transformator )
 ADD_SUBDIRECTORY( viz_zbik3d )
 ADD_SUBDIRECTORY( ecp_proxy )

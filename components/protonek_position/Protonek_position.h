@@ -42,10 +42,10 @@
 namespace orocos_test
 {
 
-class Protonek_position: public RTT::TaskContext
+class ProtonekPosition: public RTT::TaskContext
 {
 public:
-	Protonek_position(std::string name);
+	ProtonekPosition(std::string name);
 
 	/**
 	 * This function is for the configuration code.
