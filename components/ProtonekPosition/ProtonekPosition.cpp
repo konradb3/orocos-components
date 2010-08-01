@@ -23,7 +23,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <ocl/ComponentLoader.hpp>
+#include <ocl/Component.hpp>
 
 #include "ProtonekPosition.h"
 
@@ -37,11 +37,11 @@ ProtonekPosition::ProtonekPosition(std::string name) :
 	msrPos_port("msrPos"),
 	port_prop("Device", "UNIX device file (/dev/protonek)")
 {
-	this->ports()->addPort(&cmdVel_port, "Commanded velocity");
-	this->ports()->addPort(&msrVel_port, "Measured velocity");
-	this->ports()->addPort(&msrPos_port, "Measured position");
+	this->ports()->addPort( cmdVel_port ).doc("Commanded velocity");
+	this->ports()->addPort( msrVel_port ).doc("Measured velocity");
+	this->ports()->addPort( msrPos_port ).doc("Measured position");
 
-	this->properties()->addProperty(&port_prop);
+	this->properties()->addProperty(port_prop);
 
 }
 
@@ -66,7 +66,7 @@ void ProtonekPosition::updateHook()
 {
 	double rot;
 
-	cmdVel_port.Get(cmdVel);
+	cmdVel_port.read( cmdVel );
 	protonek.setVelocity(cmdVel.vel.x(), cmdVel.rot.z());
 	protonek.update();
 	protonek.updateOdometry();
@@ -74,8 +74,8 @@ void ProtonekPosition::updateHook()
 	protonek.getOdometry(msrPos.p.data[0],msrPos.p.data[1], rot);
 	msrPos.M = KDL::Rotation::RPY(0.0, 0.0, rot);
 
-	msrVel_port.Set(msrVel);
-	msrPos_port.Set(msrPos);
+	msrVel_port.write( msrVel );
+	msrPos_port.write( msrPos );
 }
 
 void ProtonekPosition::stopHook()

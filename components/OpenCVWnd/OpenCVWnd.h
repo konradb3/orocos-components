@@ -1,10 +1,8 @@
 /*
- * Protonek_position.h
+ * OpenCVWnd.h
  *
- *  Created on: Dec 28, 2009
- *      Author: Konrad Banachowicz
- *      Copyright : (C) 2010
- *
+ *  Created on: 01-08-2010
+ *  Author: Konrad Banachowicz
  ***************************************************************************
  *   This library is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU Lesser General Public            *
@@ -23,36 +21,28 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef PROTONEK_POSITION_H_
-#define PROTONEK_POSITION_H_
-
-#include <vector>
+#ifndef OPENCVWND_H_
+#define OPENCVWND_H_
 
 #include <rtt/RTT.hpp>
-
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
-#include <rtt/Operation.hpp>
-#include <rtt/Property.hpp>
 
-#include <kdl/frames.hpp>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
 
-#include "protonek.h"
+#include <string>
 
-namespace orocos_test
-{
-
-class ProtonekPosition: public RTT::TaskContext
-{
+class OpenCVWnd: public RTT::TaskContext {
 public:
-	ProtonekPosition(std::string name);
+	OpenCVWnd(std::string &_name);
+	virtual ~OpenCVWnd();
 
 	/**
 	 * This function is for the configuration code.
 	 * Return false to abort configuration.
 	 */
 	bool configureHook();
-
 	/**
 	 * This function is for the application's start up code.
 	 * Return false to abort start up.
@@ -74,21 +64,9 @@ public:
 	 */
 	void cleanupHook();
 protected:
-
-	RTT::InputPort<KDL::Twist> cmdVel_port;
-	RTT::OutputPort<KDL::Twist> msrVel_port;
-	RTT::OutputPort<KDL::Frame> msrPos_port;
-	RTT::Property<std::string> port_prop;
+	RTT::InputPort<cv::Mat> image_port;
 private:
-
-	Protonek protonek;
-	std::string port_name;
-
-	KDL::Twist cmdVel;
-	KDL::Twist msrVel;
-	KDL::Frame msrPos;
+	cv::Mat img;
 };
 
-}
-
-#endif /* PROTONEK_POSITION_H_ */
+#endif /* OPENCVWND_H_ */

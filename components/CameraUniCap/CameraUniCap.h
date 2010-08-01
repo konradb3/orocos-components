@@ -1,10 +1,8 @@
 /*
- * Protonek_position.h
+ * CameraUniCap.h
  *
- *  Created on: Dec 28, 2009
- *      Author: Konrad Banachowicz
- *      Copyright : (C) 2010
- *
+ *  Created on: 31-07-2010
+ *  Author: Konrad Banachowicz
  ***************************************************************************
  *   This library is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU Lesser General Public            *
@@ -23,36 +21,32 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef PROTONEK_POSITION_H_
-#define PROTONEK_POSITION_H_
-
-#include <vector>
+#ifndef CAMERAUNICAP_H_
+#define CAMERAUNICAP_H_
 
 #include <rtt/RTT.hpp>
-
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
-#include <rtt/Operation.hpp>
-#include <rtt/Property.hpp>
 
-#include <kdl/frames.hpp>
+#include <string>
 
-#include "protonek.h"
+#include <unicap/unicap.h>
+#include <opencv/cv.h>
 
-namespace orocos_test
-{
+#define MAX_DEVICES 8
+#define MAX_FORMATS 32
+#define MAX_PROPERTIES 32
 
-class ProtonekPosition: public RTT::TaskContext
-{
+class CameraUniCap: public RTT::TaskContext {
 public:
-	ProtonekPosition(std::string name);
+	CameraUniCap(std::string &_name);
+	virtual ~CameraUniCap();
 
 	/**
 	 * This function is for the configuration code.
 	 * Return false to abort configuration.
 	 */
 	bool configureHook();
-
 	/**
 	 * This function is for the application's start up code.
 	 * Return false to abort start up.
@@ -73,22 +67,34 @@ public:
 	 * This function is called when the task is being deconfigured.
 	 */
 	void cleanupHook();
+
 protected:
+	RTT::OutputPort<cv::Mat> image_port;
 
-	RTT::InputPort<KDL::Twist> cmdVel_port;
-	RTT::OutputPort<KDL::Twist> msrVel_port;
-	RTT::OutputPort<KDL::Frame> msrPos_port;
-	RTT::Property<std::string> port_prop;
+	RTT::Property<std::string> device_prop;
+	RTT::Property<std::string> format_prop;
+	RTT::Property<int> width_prop;
+	RTT::Property<int> height_prop;
+	RTT::Property<std::string> input_prop;
+	RTT::Property<std::string> norm_prop;
+	RTT::Property<double> brightness_prop;
+	RTT::Property<double> contrast_prop;
+	RTT::Property<double> saturation_prop;
+	RTT::Property<double> hue_prop;
+
+
 private:
+	static void new_frame_cb(unicap_event_t event, unicap_handle_t handle,
+				unicap_data_buffer_t *buffer, void *usr_data);
 
-	Protonek protonek;
-	std::string port_name;
+	/// Frame
+	cv::Mat frame;
 
-	KDL::Twist cmdVel;
-	KDL::Twist msrVel;
-	KDL::Frame msrPos;
+	unicap_handle_t handle;
+	unicap_device_t device;
+	unicap_format_t format;
+	unicap_data_buffer_t buffer;
+
 };
 
-}
-
-#endif /* PROTONEK_POSITION_H_ */
+#endif /* CAMERAUNICAP_H_ */
