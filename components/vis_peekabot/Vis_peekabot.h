@@ -32,10 +32,10 @@
 
 #include <rtt/RTT.hpp>
 #include <rtt/TaskContext.hpp>
-#include <rtt/Ports.hpp>
-#include <rtt/Properties.hpp>
+#include <rtt/Port.hpp>
 
 #include <peekabot.hh>
+#include <opencv/cv.h>
 
 namespace orocos_test
 {
@@ -71,9 +71,9 @@ public:
 	 */
 	void cleanupHook();
 protected:
-	RTT::DataPort<std::vector<KDL::Vector> > cloud_port;
+	RTT::InputPort<cv::Mat > cloud_port;
 private:
-	std::vector<KDL::Vector> cloud;
+	cv::Mat cloud;
 	peekabot::PeekabotClient client;
 	peekabot::PointCloudProxy cloud_proxy;
 };

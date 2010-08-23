@@ -20,34 +20,96 @@
      ...
   -->
 
- <!-- <simple name="Import" type="string"><value>/home/konrad/orocos-components/build/components/CameraUniCap/</value></simple> -->
+  <simple name="Import" type="string"><value>/home/konradb3/orocos-components/build/components/CameraUniCap/</value></simple>
+  <simple name="Import" type="string"><value>/home/konradb3/orocos-components/build/components/OpenCVWnd/</value></simple>
+  <simple name="Import" type="string"><value>/home/konradb3/orocos-components/build/components/StereoDepth/</value></simple>
+  <simple name="Import" type="string"><value>/home/konradb3/orocos-components/build/components/vis_peekabot/</value></simple>
   
-  <struct name="camera" type="CameraUniCap">
+  <struct name="cameral" type="CameraUniCap">
     <struct name="Activity" type="NonPeriodicActivity">
       <simple name="Priority" type="short"><value>0</value></simple>
       <simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
     </struct>
 
-    <simple name="AutoConf" type="boolean"><value>0</value></simple>
+    <simple name="AutoConf" type="boolean"><value>1</value></simple>
+    <simple name="AutoStart" type="boolean"><value>1</value></simple>
+    
+    <struct name="Properties" type="PropertyBag">
+    	<simple name="device" type="string"><value>/dev/video0</value></simple>
+    	<simple name="input" type="string"><value>Composite1</value></simple>
+    </struct>
+    
+    <struct name="Ports" type="PropertyBag">
+    	<simple name="ImageOutput" type="string"><value>left </value></simple>
+    </struct>
+  </struct>
+
+  <struct name="camerar" type="CameraUniCap">
+    <struct name="Activity" type="NonPeriodicActivity">
+      <simple name="Priority" type="short"><value>0</value></simple>
+      <simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
+    </struct>
+
+    <simple name="AutoConf" type="boolean"><value>1</value></simple>
+    <simple name="AutoStart" type="boolean"><value>1</value></simple>
+    
+    <struct name="Properties" type="PropertyBag">
+    	<simple name="device" type="string"><value>/dev/video1</value></simple>
+    	<simple name="input" type="string"><value>Composite1</value></simple>
+    </struct>
+    
+    <struct name="Ports" type="PropertyBag">
+    	<simple name="ImageOutput" type="string"><value>right </value></simple>
+    </struct>
+  </struct>
+
+  <struct name="stereo" type="StereoDepth">
+    <struct name="Activity" type="PeriodicActivity">
+      <simple name="Period" type="double"><value>0.033</value></simple>
+      <simple name="Priority" type="short"><value>0</value></simple>
+      <simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
+    </struct>
+
+    <simple name="AutoConf" type="boolean"><value>1</value></simple>
     <simple name="AutoStart" type="boolean"><value>0</value></simple>
     
     <struct name="Ports" type="PropertyBag">
-    	<simple name="ImageOutput" type="string"><value>image </value></simple>
+    	<simple name="LeftImage" type="string"><value>left </value></simple>
+    	<simple name="RightImage" type="string"><value>right </value></simple>
+    	<simple name="DepthImage" type="string"><value>depth </value></simple>
+    	<simple name="xyzPoints" type="string"><value>xyz </value></simple>
     </struct>
   </struct>
 
   <struct name="window" type="OpenCVWnd">
     <struct name="Activity" type="PeriodicActivity">
-      <simple name="Period" type="double"><value>0.1</value></simple>
+      <simple name="Period" type="double"><value>0.033</value></simple>
       <simple name="Priority" type="short"><value>0</value></simple>
       <simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
     </struct>
 
-    <simple name="AutoConf" type="boolean"><value>0</value></simple>
+    <simple name="AutoConf" type="boolean"><value>1</value></simple>
     <simple name="AutoStart" type="boolean"><value>0</value></simple>
     
     <struct name="Ports" type="PropertyBag">
-    	<simple name="ImageInput" type="string"><value>image </value></simple>
+    	<simple name="ImageLeft" type="string"><value>left </value></simple>
+    	<simple name="ImageRight" type="string"><value>right </value></simple>
+    	<simple name="ImageDepth" type="string"><value>depth </value></simple>
+    </struct>
+  </struct>
+
+  <struct name="peek" type="orocos_test::Vis_peekabot">
+    <struct name="Activity" type="PeriodicActivity">
+      <simple name="Period" type="double"><value>0.033</value></simple>
+      <simple name="Priority" type="short"><value>0</value></simple>
+      <simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
+    </struct>
+
+    <simple name="AutoConf" type="boolean"><value>1</value></simple>
+    <simple name="AutoStart" type="boolean"><value>0</value></simple>
+    
+    <struct name="Ports" type="PropertyBag">
+    	<simple name="PointCloud_input" type="string"><value>xyz </value></simple>
     </struct>
   </struct>
 

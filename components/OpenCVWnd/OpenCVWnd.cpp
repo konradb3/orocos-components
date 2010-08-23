@@ -25,9 +25,13 @@
 
 #include "OpenCVWnd.h"
 
-OpenCVWnd::OpenCVWnd(std::string &_name) : TaskContext(_name), image_port("ImageInput")
+OpenCVWnd::OpenCVWnd(std::string &_name) : TaskContext(_name), left_port("ImageLeft"), right_port("ImageRight"), depth_port("ImageDepth")
 {
-	this->ports()->addPort(image_port);
+	this->ports()->addPort(left_port);
+	this->ports()->addPort(right_port);
+	this->ports()->addPort(depth_port);
+
+	this->addOperation("save", &OpenCVWnd::save_op, this);
 }
 
 OpenCVWnd::~OpenCVWnd()
@@ -37,19 +41,44 @@ OpenCVWnd::~OpenCVWnd()
 
 bool OpenCVWnd::configureHook()
 {
-	cv::namedWindow("test");
+	cv::namedWindow("left");
+	cv::namedWindow("right");
+	cv::namedWindow("depth");
 	return true;
 }
 
 bool OpenCVWnd::startHook()
 {
+	save = false;
+	index = '0';
 	return true;
 }
 
 void OpenCVWnd::updateHook()
 {
-	image_port.read(img);
-	cv::imshow("test", img);
+	left_port.read(left);
+	right_port.read(right);
+	depth_port.read(depth);
+	if(!left.empty())
+		cv::imshow("left", left);
+	if(!right.empty())
+		cv::imshow("right", right);
+	if(!depth.empty())
+		cv::imshow("depth", depth);
+
+	if(save)
+	{
+		save = false;
+		std::string filename;
+
+		filename = std::string("left") + index + ".png";
+		cv::imwrite(filename, left);
+
+		filename = std::string("right") + index + ".png";
+		cv::imwrite(filename, right);
+		++index;
+	}
+
 	cv::waitKey(10);
 }
 
@@ -62,5 +91,11 @@ void OpenCVWnd::cleanupHook()
 {
 
 }
+
+void OpenCVWnd::save_op(void)
+{
+	save = true;
+}
+
 
 ORO_CREATE_COMPONENT( OpenCVWnd );

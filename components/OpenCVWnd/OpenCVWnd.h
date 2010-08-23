@@ -64,9 +64,20 @@ public:
 	 */
 	void cleanupHook();
 protected:
-	RTT::InputPort<cv::Mat> image_port;
+	RTT::InputPort<cv::Mat> left_port;
+	RTT::InputPort<cv::Mat> right_port;
+	RTT::InputPort<cv::Mat> depth_port;
 private:
-	cv::Mat img;
+
+	void save_op(void);
+
+	bool save;
+
+	char index;
+
+	cv::Mat left;
+	cv::Mat right;
+	cv::Mat depth;
 };
 
 #endif /* OPENCVWND_H_ */
